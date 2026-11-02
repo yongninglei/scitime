@@ -11,6 +11,14 @@ Every few seconds it records which app, browser tab and terminal job is in front
 sorts the time into categories. Today's total sits in the menu bar; a dashboard shows
 the day by category, hour and the last two weeks.
 
+<p align="center">
+  <img src="docs/img/menubar.png" width="460" alt="SciTime in the macOS menu bar: today's total, time per category with top sites, and goal checks">
+</p>
+
+![SciTime dashboard: active time, research focus, time per category and most-used tools](docs/img/dashboard.png)
+
+<sub>Both pictures use the made-up demo data (`uv run scitime demo`), not a real person's day.</sub>
+
 | Category | How it is recognised |
 |---|---|
 | **Vibe coding** | Claude desktop app, `claude`/`codex`/`aider` running in the front terminal tab, Cursor, VS Code, Zed, GitHub, claude.ai/code |

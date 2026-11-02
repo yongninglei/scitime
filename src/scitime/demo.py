@@ -65,3 +65,58 @@ def write(out: Path, db: Path, today: dt.date | None = None) -> Path:
     dashboard.write(con, cfg, today, 14, out)
     con.close()
     return out
+
+
+MENU_CSS = """
+body { margin:0; width:620px; height:520px; font:13px -apple-system, BlinkMacSystemFont, sans-serif;
+       background: linear-gradient(140deg, #5b5bf0 0%, #a35cf0 55%, #f08bb4 100%); overflow:hidden; }
+.mb { height:26px; display:flex; justify-content:flex-end; align-items:center; gap:16px; padding:0 14px;
+      background:rgba(255,255,255,.28); backdrop-filter:blur(20px); color:#111; font-weight:500; }
+.mb .on { background:rgba(255,255,255,.55); border-radius:5px; padding:2px 8px; font-variant-numeric:tabular-nums; }
+.menu { position:absolute; top:30px; left:126px; width:330px; padding:5px; border-radius:11px;
+        background:rgba(246,246,248,.93); backdrop-filter:blur(30px); color:#1d1d1f;
+        box-shadow:0 0 0 .5px rgba(0,0,0,.18), 0 12px 40px rgba(0,0,0,.28); }
+.r { display:flex; align-items:center; gap:7px; padding:3px 10px; border-radius:6px; line-height:18px;
+     white-space:nowrap; }
+.r .x { margin-left:auto; color:#888; }
+.r.hl { background:#5b5bf0; color:#fff; } .r.hl .x { color:#fff; }
+.d { width:9px; height:9px; border-radius:50%; flex:none; }
+.s { height:1px; background:rgba(0,0,0,.1); margin:5px 10px; }
+.sub { position:absolute; top:94px; left:460px; width:150px; padding:5px; border-radius:11px;
+       background:rgba(246,246,248,.93); box-shadow:0 0 0 .5px rgba(0,0,0,.18), 0 12px 40px rgba(0,0,0,.28); }
+"""
+
+
+def write_menubar_mock(out: Path, db: Path, today: dt.date) -> Path:
+    """HTML picture of the menu bar item and its open menu, from the demo data (for the README)."""
+    from html import escape
+
+    from . import alerts, menubar, report
+
+    cfg = rules.parse(rules.default_rules_text())
+    cfg.phone_dir = ""
+    con = store.connect(db)
+    fill(con, today)
+    s = report.summarize_day(con, cfg, today)
+    now = dt.datetime.combine(today, dt.time(16, 40)).timestamp()
+    view = menubar.build(s, cfg, alerts.evaluate(s, cfg), now - 5, now)
+    con.close()
+    rows, sub, first_cat = [], "", True
+    for r in view.rows + [None, menubar.Row("Open dashboard"), menubar.Row("Refresh now"), menubar.Row("Quit SciTime")]:
+        if r is None:
+            rows.append('<div class="s"></div>')
+            continue
+        dot = f'<span class="d" style="background:{r.color}"></span>' if r.color else ""
+        hl = r.color and first_cat
+        chevron = '<span class="x">›</span>' if r.children else ""
+        rows.append(f'<div class="r{" hl" if hl else ""}">{dot}{escape(r.text)}{chevron}</div>')
+        if hl:
+            first_cat = False
+            sub = "".join(f'<div class="r">{escape(c)}</div>' for c in r.children)
+    clock = dt.datetime.fromtimestamp(now).strftime("%a %-d %b  %H:%M")
+    out.write_text(
+        f'<!doctype html><meta charset="utf-8"><style>{MENU_CSS}</style>'
+        f'<div class="mb"><span>🔋 87%</span><span>📶</span><span class="on">{escape(view.title)}</span>'
+        f'<span>{clock}</span></div><div class="menu">{"".join(rows)}</div><div class="sub">{sub}</div>'
+    )
+    return out

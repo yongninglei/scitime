@@ -130,7 +130,7 @@ def run() -> None:
             menu.addItem_(NSMenuItem.separatorItem())
             self._action(menu, "Open dashboard", "openDashboard:")
             self._action(menu, "Refresh now", "refresh:")
-            self._action(menu, "Quit scitime bar", "quit:")
+            self._action(menu, "Quit SciTime", "quit:")
             self.item.setMenu_(menu)
 
         @objc.typedSelector(b"v@:@")

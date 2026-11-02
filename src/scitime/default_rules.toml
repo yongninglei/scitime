@@ -1,0 +1,195 @@
+# scitime rules — copied to ~/.config/scitime/rules.toml by `scitime init`.
+# Edit that copy. Rules are applied when you look at a report, not when time is
+# recorded, so changing a rule also re-sorts your past data.
+
+[settings]
+interval = 5            # seconds between samples
+idle_threshold = 300    # no keyboard/mouse for this long = away, not counted
+# Folder where `scitime export` writes daily JSON summaries, e.g. an iCloud
+# Drive folder that the phone version can also read and write. Empty = off.
+sync_dir = ""
+
+# iPhone: iOS Shortcuts automations append "date,open,App" / "date,close" lines to
+# <dir>/phone_events.txt. scitime also writes the combined dashboard there, so the
+# phone can open it in the Files app. Set dir = "" to ignore the phone.
+[phone]
+dir = "~/Library/Mobile Documents/iCloud~is~workflow~my~workflows/Documents/scitime"
+max_session_minutes = 120   # cap a session whose "close" was missed
+
+# Categories: label and colour used in reports and the dashboard.
+[categories.vibe_coding]
+label = "Vibe coding"
+color = "#7c5cff"
+
+[categories.paper_writing]
+label = "Paper + AI writing"
+color = "#2fa36b"
+
+[categories.figures]
+label = "Figures / drawing"
+color = "#0e9f9a"
+
+[categories.data_analysis]
+label = "Data analysis"
+color = "#b4559b"
+
+[categories.server]
+label = "Server / data"
+color = "#e07b39"
+
+[categories.browsing]
+label = "Browsing"
+color = "#3b82c4"
+
+[categories.social]
+label = "Social / video"
+color = "#d6457a"
+
+[categories.communication]
+label = "Mail / chat"
+color = "#c9a227"
+
+[categories.terminal_local]
+label = "Terminal (local)"
+color = "#6b7280"
+
+[categories.other]
+label = "Other"
+color = "#a3a3a3"
+
+# Rules: first match wins. Every field given is a regex (case-insensitive) and
+# all of them must match. Fields: app, bundle, title, url, domain, detail.
+# detail is "ssh:<host>" or "cli:<name>" for terminal tabs.
+
+# --- iPhone apps (bundle is "iphone"; app is the name used in the Shortcut) ---
+[[rule]]
+category = "social"
+bundle = "^iphone$"
+app = "douyin|抖音|tiktok|instagram|^ins$|xiaohongshu|小红书|rednote|bilibili|哔哩|youtube|weibo|微博|^x$|twitter|reddit|facebook|zhihu|知乎|netflix|kuaishou|快手"
+
+[[rule]]
+category = "communication"
+bundle = "^iphone$"
+app = "wechat|微信|whatsapp|telegram|mail|邮件|outlook|gmail|slack|messages|信息|teams"
+
+[[rule]]
+category = "paper_writing"
+bundle = "^iphone$"
+app = "docs|chatgpt|claude|gemini|paperpile|zotero|notion|obsidian|word"
+
+[[rule]]
+category = "browsing"
+bundle = "^iphone$"
+app = "safari|chrome|news|reader"
+
+# --- data analysis ------------------------------------------------------------
+[[rule]]
+category = "data_analysis"
+bundle = "com\\.mathworks\\.|org\\.rstudio\\.|com\\.rstudio\\.|org\\.jasp-stats|com\\.ibm\\.spss|com\\.stata\\.|com\\.graphpad\\.|org\\.fiji|gov\\.nih\\.imagej|fsleyes|freeview|org\\.openmicroscopy|org\\.python\\.spyder"
+[[rule]]
+category = "data_analysis"
+app = "matlab|rstudio|positron|jasp|spss|stata|prism|fiji|imagej|fsleyes|freeview|spyder|napari"
+[[rule]]
+category = "data_analysis"
+url = "^https?://(localhost|127\\.0\\.0\\.1):(8501|3838)(/|$)"   # your own Streamlit / Shiny apps; add ports here
+
+# --- figures / drawing ------------------------------------------------------
+[[rule]]
+category = "figures"
+bundle = "com\\.seriflabs\\."           # Affinity Designer / Photo / Publisher (v1, v2, v3)
+[[rule]]
+category = "figures"
+bundle = "com\\.adobe\\.illustrator|org\\.inkscape|com\\.figma\\.|com\\.bohemiancoding\\.sketch"
+[[rule]]
+category = "figures"
+app = "affinity|illustrator|inkscape|figma"
+[[rule]]
+category = "figures"
+domain = "biorender\\.com$|figma\\.com$"
+
+# --- server -----------------------------------------------------------------
+[[rule]]
+category = "server"
+detail = "^ssh:"
+
+[[rule]]
+category = "server"
+title = "\\[SSH: |\\[Remote|— SSH:"      # VS Code / Cursor Remote-SSH windows
+
+[[rule]]
+category = "server"
+bundle = "com\\.citrix\\."              # Citrix Workspace and its remote desktop viewer
+[[rule]]
+category = "server"
+app = "citrix"
+
+[[rule]]
+category = "server"
+url = ":8888/|/jupyter/|/lab(/|\\?|$)"  # Jupyter (usually tunnelled to a server)
+
+# --- vibe coding ------------------------------------------------------------
+[[rule]]
+category = "vibe_coding"
+detail = "^cli:"
+
+[[rule]]
+category = "vibe_coding"
+url = "claude\\.ai/code"
+
+[[rule]]
+category = "vibe_coding"
+bundle = "com\\.anthropic\\.claude|com\\.todesktop\\.|com\\.microsoft\\.VSCode|dev\\.zed\\.Zed|com\\.jetbrains\\.|com\\.apple\\.dt\\.Xcode|com\\.exafunction\\.windsurf|com\\.openai\\.codex"
+
+[[rule]]
+category = "vibe_coding"
+domain = "^github\\.com$|^gitlab\\.|^colab\\.research\\.google\\.com$"
+
+# --- paper writing (docs + AI chat + literature) ----------------------------
+[[rule]]
+category = "paper_writing"
+domain = "^docs\\.google\\.com$|overleaf\\.com$|paperpile\\.com$|^claude\\.ai$|^chatgpt\\.com$|^chat\\.openai\\.com$|^gemini\\.google\\.com$|^notebooklm\\.google\\.com$|^scholar\\.google\\.|pubmed|biorxiv\\.org$|arxiv\\.org$|doi\\.org$|sciencedirect\\.com$|nature\\.com$|elifesciences\\.org$"
+
+[[rule]]
+category = "paper_writing"
+bundle = "com\\.microsoft\\.Word|com\\.apple\\.iWork\\.Pages|org\\.zotero|md\\.obsidian|com\\.openai\\.chat|com\\.google\\.GeminiMacOS"
+
+# --- social / video ---------------------------------------------------------
+[[rule]]
+category = "social"
+domain = "youtube\\.com$|youtu\\.be$|bilibili\\.com$|douyin\\.com$|tiktok\\.com$|instagram\\.com$|^x\\.com$|twitter\\.com$|reddit\\.com$|weibo\\.com$|xiaohongshu\\.com$|facebook\\.com$|netflix\\.com$|zhihu\\.com$"
+
+# --- communication ----------------------------------------------------------
+[[rule]]
+category = "communication"
+bundle = "com\\.apple\\.mail|com\\.microsoft\\.Outlook|com\\.tinyspeck\\.slackmacgap|com\\.tencent\\.xinWeChat|com\\.microsoft\\.teams|us\\.zoom\\.xos|ru\\.keepcoder\\.Telegram|net\\.whatsapp|com\\.apple\\.MobileSMS"
+
+[[rule]]
+category = "communication"
+domain = "^mail\\.google\\.com$|^outlook\\.|slack\\.com$|^meet\\.google\\.com$|zoom\\.us$|web\\.whatsapp\\.com$"
+
+# --- fallbacks --------------------------------------------------------------
+[[rule]]
+category = "browsing"
+bundle = "com\\.google\\.Chrome|com\\.apple\\.Safari|com\\.brave\\.Browser|com\\.microsoft\\.edgemac|company\\.thebrowser\\.Browser|org\\.mozilla\\.firefox|com\\.vivaldi\\.Vivaldi|org\\.chromium"
+
+[[rule]]
+category = "terminal_local"
+bundle = "com\\.apple\\.Terminal|com\\.googlecode\\.iterm2|com\\.mitchellh\\.ghostty|com\\.github\\.wez\\.wezterm|dev\\.warp\\.|net\\.kovidgoyal\\.kitty|io\\.alacritty"
+
+# --- alerts and daily email ---------------------------------------------------
+[digest]
+time = "21:00"   # when the daily summary is sent (by the launch agent)
+email = ""       # your address; empty = only a macOS notification, no email
+# The email is sent through the Mail app with your normal account.
+
+# min_hours: warn in the evening digest if the day ends below this.
+# max_hours: macOS notification as soon as the day goes over, plus a line in the digest.
+[[alert]]
+name = "Writing"
+categories = ["paper_writing"]
+min_hours = 4
+
+[[alert]]
+name = "Browsing + social"
+categories = ["browsing", "social"]
+max_hours = 1.5

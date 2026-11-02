@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+title: "SciTime: a scientific activity monitor for macOS"
+message: "If you use this software, please cite it as below."
+type: software
+authors:
+  - family-names: Lei
+    given-names: Yongning
+    orcid: https://orcid.org/0009-0000-3317-8006
+    email: t.lei@bcbl.eu
+    affiliation: BCBL — Basque Center on Cognition, Brain and Language
+repository-code: https://github.com/yongninglei/scitime
+license: MIT
+version: 0.1.0
+date-released: 2026-11-01
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.TODO
+    description: Concept DOI for all versions

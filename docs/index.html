@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SciTime — scientific activity monitor for macOS</title>
+<meta name="description" content="SciTime shows where a researcher's day goes: AI-assisted coding, paper writing, data analysis, figures, HPC — and distractions. Free, open source, private by design.">
+<style>
+:root { --bg:#f3f4f8; --card:#fff; --fg:#1d1f2b; --muted:#6d7286; --line:#e6e8f0;
+        --accent:#5b5bf0; --accent2:#a35cf0; --soft:#ececfe;
+        --shadow: 0 1px 2px rgba(20,22,40,.04), 0 12px 40px rgba(20,22,40,.08); }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#0f1016; --card:#1a1b24; --fg:#eceef5; --muted:#9a9eb0; --line:#2a2c38;
+          --accent:#8b8bff; --accent2:#c08bff; --soft:#25254a; --shadow:none; }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin:0; background:var(--bg); color:var(--fg);
+       font: 16px/1.6 -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+       -webkit-font-smoothing: antialiased; }
+a { color: var(--accent); text-decoration: none; }
+.wrap { max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+nav { display:flex; align-items:center; justify-content:space-between; padding: 18px 0; }
+.brand { display:flex; align-items:center; gap:10px; font-weight:750; font-size:18px; color:var(--fg); }
+.logo { width:32px; height:32px; border-radius:10px; display:grid; place-items:center; color:#fff;
+        background: linear-gradient(135deg, var(--accent), var(--accent2)); }
+nav .links { display:flex; gap:20px; font-size:14.5px; }
+nav .links a { color: var(--muted); }
+nav .links a:hover { color: var(--fg); }
+.hero { text-align:center; padding: 56px 0 28px; }
+.badge { display:inline-flex; gap:8px; align-items:center; padding:5px 12px; border-radius:99px;
+         background:var(--soft); color:var(--accent); font-size:13px; font-weight:600; }
+h1 { font-size: clamp(36px, 6vw, 60px); line-height:1.05; letter-spacing:-.03em; margin: 18px 0 14px; }
+h1 span { background: linear-gradient(135deg, var(--accent), var(--accent2));
+          -webkit-background-clip:text; background-clip:text; color:transparent; }
+.lead { font-size: clamp(17px, 2.2vw, 20px); color: var(--muted); max-width: 640px; margin: 0 auto; }
+.cta { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-top: 28px; }
+.btn { display:inline-flex; align-items:center; gap:8px; padding: 12px 20px; border-radius: 12px;
+       font-weight: 650; font-size: 15px; border:1px solid var(--line); background:var(--card); color:var(--fg); }
+.btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent2)); color:#fff; border:none; }
+.btn:hover { transform: translateY(-1px); }
+.window { margin: 44px auto 0; border-radius: 16px; overflow:hidden; background:var(--card);
+          box-shadow: var(--shadow); border:1px solid var(--line); }
+.window .bar { display:flex; gap:7px; padding: 12px 14px; border-bottom:1px solid var(--line); }
+.window .bar i { width:12px; height:12px; border-radius:50%; background:#ff5f57; }
+.window .bar i:nth-child(2) { background:#febc2e; } .window .bar i:nth-child(3) { background:#28c840; }
+.window iframe { display:block; width:100%; height: 780px; border:0; }
+section { padding: 72px 0 0; }
+h2 { font-size: clamp(26px, 3.6vw, 36px); letter-spacing:-.02em; margin: 0 0 10px; text-align:center; }
+.sub { color: var(--muted); text-align:center; max-width: 620px; margin: 0 auto 32px; }
+.grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding: 20px;
+        box-shadow: var(--shadow); }
+.card .ic { width:40px; height:40px; border-radius:12px; display:grid; place-items:center;
+            background:var(--soft); font-size:20px; margin-bottom: 12px; }
+.card h3 { margin:0 0 6px; font-size:16.5px; }
+.card p { margin:0; color:var(--muted); font-size:14.5px; }
+.cats { display:grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap:10px; }
+.cat { display:flex; gap:12px; align-items:flex-start; padding:14px 16px; border-radius:14px;
+       background:var(--card); border:1px solid var(--line); }
+.cat .d { width:12px; height:12px; border-radius:50%; margin-top:6px; flex:none; }
+.cat b { display:block; } .cat small { color:var(--muted); font-size:13.5px; }
+pre { margin:0; background:#15161e; color:#e7e8f0; border-radius:14px; padding: 18px 20px;
+      overflow-x:auto; font: 13.5px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace; }
+pre .c { color:#7f849c; }
+.steps { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+@media (max-width: 760px) { .steps { grid-template-columns: 1fr; } nav .links { display:none; }
+  .window iframe { height: 620px; } }
+.donate { text-align:center; }
+.donate .btn { background:#ffdd00; color:#1d1f2b; border:none; }
+footer { color:var(--muted); font-size:13.5px; text-align:center; padding: 72px 0 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#"><span class="logo">⚗︎</span>SciTime</a>
+    <div class="links"><a href="#features">Features</a><a href="#categories">Categories</a>
+      <a href="#privacy">Privacy</a><a href="#install">Install</a>
+      <a href="https://github.com/yongninglei/scitime">GitHub</a></div>
+  </nav>
+
+  <header class="hero">
+    <span class="badge">🔬 Free · open source · macOS</span>
+    <h1>Where does your<br><span>research day</span> go?</h1>
+    <p class="lead">SciTime is a scientific activity monitor. It quietly sorts your screen time into
+      coding with AI, writing papers, analysing data, making figures, running jobs on the cluster —
+      and the browsing in between.</p>
+    <div class="cta">
+      <a class="btn primary" href="#install">Get started</a>
+      <a class="btn" href="demo.html">Open the live demo ↗</a>
+      <a class="btn" href="https://github.com/yongninglei/scitime">★ GitHub</a>
+    </div>
+    <div class="window"><div class="bar"><i></i><i></i><i></i></div>
+      <iframe src="demo.html" title="SciTime dashboard demo with made-up data" loading="lazy"></iframe></div>
+  </header>
+
+  <section id="features">
+    <h2>Built for researchers</h2>
+    <p class="sub">Generic screen-time apps tell you "Chrome: 6 hours". SciTime tells you how much
+      of that was Overleaf, PubMed, your Streamlit app or YouTube.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🧠</div><h3>Knows research tools</h3>
+        <p>Overleaf, Zotero, MATLAB, RStudio, Jupyter, Fiji, FSLeyes, BioRender, Affinity — and
+          AI assistants, split into coding and writing.</p></div>
+      <div class="card"><div class="ic">🖥️</div><h3>Sees your terminal</h3>
+        <p>An <code>ssh</code> session counts as cluster time, <code>claude</code> or
+          <code>codex</code> in the front tab as AI-assisted coding.</p></div>
+      <div class="card"><div class="ic">⏱</div><h3>Lives in the menu bar</h3>
+        <p>Today's total at a glance. Click for each category, the top sites and how you are doing
+          on your goals.</p></div>
+      <div class="card"><div class="ic">🎯</div><h3>Goals and limits</h3>
+        <p>"Write at least 4 h", "browse at most 1.5 h". A notification when you cross a limit and
+          an evening digest by email.</p></div>
+      <div class="card"><div class="ic">📱</div><h3>iPhone too</h3>
+        <p>Optional Shortcuts automations add phone time to the same day — no app to install, no
+          developer account.</p></div>
+      <div class="card"><div class="ic">✍️</div><h3>Your own rules</h3>
+        <p>One TOML file of regexes over app, URL, window title and terminal job. Edit it and past
+          days are re-sorted too.</p></div>
+    </div>
+  </section>
+
+  <section id="categories">
+    <h2>Categories out of the box</h2>
+    <p class="sub">Rename them, recolour them or add your own in <code>rules.toml</code>.</p>
+    <div class="cats">
+      <div class="cat"><span class="d" style="background:#7c5cff"></span><div><b>Vibe coding</b><small>Claude Code, Codex, Cursor, VS Code, GitHub</small></div></div>
+      <div class="cat"><span class="d" style="background:#2fa36b"></span><div><b>Paper + AI writing</b><small>Overleaf, Google Docs, Zotero, ChatGPT/Claude chat, PubMed, arXiv</small></div></div>
+      <div class="cat"><span class="d" style="background:#b4559b"></span><div><b>Data analysis</b><small>MATLAB, RStudio, JASP, SPSS, Prism, Fiji, local Streamlit apps</small></div></div>
+      <div class="cat"><span class="d" style="background:#0e9f9a"></span><div><b>Figures / drawing</b><small>Affinity, Illustrator, Inkscape, Figma, BioRender</small></div></div>
+      <div class="cat"><span class="d" style="background:#e07b39"></span><div><b>Server / HPC</b><small>ssh and mosh sessions, Remote-SSH editors, Jupyter, Citrix</small></div></div>
+      <div class="cat"><span class="d" style="background:#c9a227"></span><div><b>Mail / chat</b><small>Mail, Outlook, Slack, Teams, Zoom, WeChat</small></div></div>
+      <div class="cat"><span class="d" style="background:#3b82c4"></span><div><b>Browsing</b><small>any other web page</small></div></div>
+      <div class="cat"><span class="d" style="background:#d6457a"></span><div><b>Social / video</b><small>YouTube, X, Reddit, Instagram, Bilibili, Douyin…</small></div></div>
+    </div>
+  </section>
+
+  <section id="privacy">
+    <h2>Private by design</h2>
+    <p class="sub">SciTime has no server, no account and no network code. Your activity is a SQLite
+      file on your Mac.</p>
+    <div class="grid">
+      <div class="card"><div class="ic">🔒</div><h3>Stays on your Mac</h3>
+        <p>Stored in <code>~/Library/Application Support/scitime</code>, readable only by your user.</p></div>
+      <div class="card"><div class="ic">🚫</div><h3>No screenshots, no keylogging</h3>
+        <p>Only the name of the app in front, the active tab's address and the terminal job.</p></div>
+      <div class="card"><div class="ic">💤</div><h3>Idle time ignored</h3>
+        <p>Five minutes without keyboard or mouse and the clock stops.</p></div>
+    </div>
+  </section>
+
+  <section id="install">
+    <h2>Install in a minute</h2>
+    <p class="sub">Needs macOS and <a href="https://docs.astral.sh/uv/">uv</a>.</p>
+    <div class="steps">
+      <pre><span class="c"># get it</span>
+git clone https://github.com/yongninglei/scitime
+cd scitime
+uv sync
+
+<span class="c"># see a dashboard with made-up data</span>
+uv run scitime demo</pre>
+      <pre><span class="c"># your own rules, then run at login</span>
+uv run scitime init
+uv run scitime install-agent
+
+<span class="c"># any time</span>
+uv run scitime report
+uv run scitime dashboard</pre>
+    </div>
+  </section>
+
+  <section class="donate" id="donate" hidden>
+    <h2>Support SciTime</h2>
+    <p class="sub">SciTime is free. If it helps your research, a coffee keeps it going.</p>
+    <a class="btn" id="bmc" href="#">☕ Buy me a coffee</a>
+  </section>
+
+  <footer>
+    SciTime is MIT-licensed, by <a href="https://github.com/yongninglei">Yongning Lei</a>.
+    Inspired by <a href="https://github.com/Planshit/Tai">Tai</a> for Windows.
+  </footer>
+</div>
+<script>
+// Set this to your Buy Me a Coffee username to show the donate section.
+const BUYMEACOFFEE = "";
+if (BUYMEACOFFEE) {
+  document.getElementById("bmc").href = "https://buymeacoffee.com/" + BUYMEACOFFEE;
+  document.getElementById("donate").hidden = false;
+}
+</script>
+</body>
+</html>

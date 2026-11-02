@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "scitime"
+version = "0.1.0"
+description = "SciTime: a scientific activity monitor for macOS — see how your research day splits between coding, writing, analysis, HPC and distractions"
+readme = "README.md"
+license = "MIT"
+authors = [{ name = "Yongning Lei", email = "t.lei@bcbl.eu" }]
+requires-python = ">=3.11"
+dependencies = [
+    "typer>=0.12",
+    "rich>=13",
+    "pyobjc-framework-Cocoa>=10; sys_platform == 'darwin'",
+    "pyobjc-framework-Quartz>=10; sys_platform == 'darwin'",
+]
+
+[project.scripts]
+scitime = "scitime.cli:app"
+
+[dependency-groups]
+dev = ["pytest>=8"]
+
+[tool.ruff]
+line-length = 100

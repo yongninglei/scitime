@@ -1,6 +1,6 @@
 # SciTime — a scientific activity monitor
 
-**[Website](https://yongninglei.github.io/scitime/) · [Live demo](https://yongninglei.github.io/scitime/demo.html)**
+**[Website](https://yongninglei.github.io/scitime/) · [Live demo](https://yongninglei.github.io/scitime/demo.html) · [☕ Buy me a coffee](https://buymeacoffee.com/tlei)**
 
 SciTime shows where a researcher's day actually goes: coding with AI, writing papers,
 analysing data, making figures, running jobs on the cluster — or browsing and social

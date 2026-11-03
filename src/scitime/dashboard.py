@@ -142,7 +142,8 @@ def render(today: DaySummary, days: list[DaySummary], cfg: Config) -> str:
 
     cats = list(cfg.categories) + sorted({c for d in days for c in d.by_category} - set(cfg.categories))
     total = today.total or 1
-    focus = sum(v for c, v in today.by_category.items() if c in FOCUS)
+    # `focus = true/false` on a [categories.x] table overrides the built-in FOCUS set
+    focus = sum(v for c, v in today.by_category.items() if cfg.categories.get(c, {}).get("focus", c in FOCUS))
     distract = sum(v for c, v in today.by_category.items() if c in DISTRACTION)
     mac, ph = sum(today.by_device["mac"].values()), sum(today.by_device["phone"].values())
     week = days[-7:]

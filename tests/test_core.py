@@ -135,3 +135,25 @@ def test_menubar_view(tmp_path):
     assert not any(r and "tracker running" in r.text for r in v.rows)
     stale = menubar.build(s, CFG, [], last_sample=None, now=t0)
     assert stale.title == "⏱ 3h 00m" and "never" in stale.rows[-1].text
+
+
+def test_add_category_and_rule():
+    import pytest
+
+    t = rules.add_category_text(rules.default_rules_text(), "grant_writing", "Grant writing", focus=True)
+    t = rules.add_rule_text(t, "grant_writing", {"domain": "www.erc.europa.eu"})
+    t = rules.add_rule_text(t, "grant_writing", {"domain": "nature.com"})  # user rules beat the defaults
+    c = rules.parse(t)
+    seg = lambda d: {"bundle": "com.google.Chrome", "domain": d}  # noqa: E731
+    assert c.classify(seg("erc.europa.eu")) == "grant_writing"
+    assert c.classify(seg("ec.erc.europa.eu")) == "grant_writing"
+    assert c.classify(seg("notmyerc.europa.eu")) == "browsing"
+    assert c.classify(seg("nature.com")) == "grant_writing"
+    assert c.categories["grant_writing"]["focus"] is True
+    assert c.categories["grant_writing"]["color"].startswith("#")
+    with pytest.raises(ValueError):
+        rules.add_rule_text(t, "nope", {"app": "x"})
+    with pytest.raises(ValueError):
+        rules.add_category_text(t, "grant_writing")
+    with pytest.raises(ValueError):
+        rules.add_rule_text(t, "grant_writing", {"app": "("})

@@ -62,7 +62,7 @@ uv run scitime digest         # preview today's digest without sending
 uv run scitime digest --send  # send it now (test)
 ```
 
-`install-agent` writes two launchd agents in `~/Library/LaunchAgents/`:
+`install-agent` writes three launchd agents in `~/Library/LaunchAgents/`:
 `io.github.yongninglei.scitime` (the tracker), `io.github.yongninglei.scitime.bar` (the menu bar item) and
 `io.github.yongninglei.scitime.digest` (runs `scitime digest --send` at `[digest] time`). Re-run it after changing the time.
 `scitime stop-agent` stops all three.
@@ -76,13 +76,31 @@ asks for Automation permission for Mail) and has the HTML dashboard attached.
 - `max_hours` — e.g. browsing + social ≤ 1.5 h. A macOS notification appears as soon
   as the day goes over, and the digest flags it.
 
-## Rules
+## Your own categories
 
-`uv run scitime init` copies the rules to `~/.config/scitime/rules.toml`. Each rule is a
-set of regexes over `app`, `bundle`, `title`, `url`, `domain`, `detail`; the first
-matching rule wins. Rules are applied when a report is made, so editing them also
-re-sorts past days. `scitime now` shows the fields for the window in front, which is
-the easiest way to write a new rule.
+Add a category, send apps or websites to it, and check where something would go:
+
+```bash
+uv run scitime categories                                   # what exists
+uv run scitime add-category grant_writing --label "Grant writing" --focus
+uv run scitime add-rule grant_writing --domain erc.europa.eu
+uv run scitime add-rule paper_reading --app "Skim|PDF Expert"
+uv run scitime which --url https://erc.europa.eu/apply      # → Grant writing
+```
+
+Your rules go above the built-in ones, so they win. Every change is validated and the
+previous file is kept as `rules.toml.bak`. Rules apply when a report is made, so past
+days are re-sorted too.
+
+**Or ask your AI.** Open the folder in Claude Code, Codex or a similar tool and ask, for
+example, *"add a Grant writing category for the ERC portal, counted as focus time"*.
+[docs/custom_categories.md](docs/custom_categories.md) is the full guide for you and
+your AI. It covers every field, examples, hand-editing, and the rule that an assistant
+never reads your activity data. [AGENTS.md](AGENTS.md) points assistants to it.
+
+The rules live in `~/.config/scitime/rules.toml` (created by `uv run scitime init`). Each
+rule is a set of regexes over `app`, `bundle`, `title`, `url`, `domain`, `detail`, and the
+first matching rule wins.
 
 ## macOS permissions
 

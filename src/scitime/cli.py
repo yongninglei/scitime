@@ -186,6 +186,92 @@ def bar() -> None:
     menubar.run()
 
 
+def _save(text: str, what: str) -> None:
+    path = rules.save_user_rules(text)
+    console.print(f"[green]saved[/green] {what} in {path} (previous version: {path.name}.bak)")
+    console.print("[dim]Past days are re-sorted too; the menu bar picks it up within a minute.[/dim]")
+
+
+@app.command()
+def categories() -> None:
+    """List your categories: key (for add-rule), label, colour, and how many rules use each."""
+    cfg = rules.load()
+    t = Table(box=None)
+    for col in ("key", "label", "colour", "rules", "focus"):
+        t.add_column(col)
+    from .dashboard import FOCUS
+
+    for key, c in cfg.categories.items():
+        n = sum(r.category == key for r in cfg.rules)
+        color = c.get("color", "")
+        foc = "yes" if c.get("focus", key in FOCUS) else ""
+        t.add_row(key, c.get("label", key), f"[{color}]●[/] {color}", str(n), foc)
+    console.print(t)
+
+
+@app.command("add-category")
+def add_category(
+    key: str = typer.Argument(..., help="Short name used in rules, e.g. grant_writing"),
+    label: str = typer.Option("", "--label", help="Name shown in reports, e.g. 'Grant writing'"),
+    color: str = typer.Option("", "--color", help="#rrggbb; a free colour is picked if left out"),
+    focus: bool = typer.Option(None, "--focus/--no-focus", help="Count it as research focus on the dashboard"),
+) -> None:
+    """Add a new category to your rules.toml (then give it rules with add-rule)."""
+    try:
+        text = rules.add_category_text(rules.user_rules_text(), key, label, color, focus)
+    except ValueError as e:
+        console.print(f"[red]ERROR[/red] {e}")
+        raise typer.Exit(1)
+    _save(text, f"category [bold]{key}[/bold]")
+
+
+@app.command("add-rule")
+def add_rule(
+    category: str = typer.Argument(..., help="Category key (see `scitime categories`)"),
+    domain: str = typer.Option("", "--domain", help="Website, e.g. jov.arvojournals.org (subdomains included) or a regex"),
+    app_: str = typer.Option("", "--app", help="App name regex, e.g. 'Skim|PDF Expert'"),
+    bundle: str = typer.Option("", "--bundle", help="App bundle id regex, e.g. 'com\\.readdle\\.'"),
+    url: str = typer.Option("", "--url", help="Regex on the full page URL"),
+    title: str = typer.Option("", "--title", help="Regex on the window title"),
+    detail: str = typer.Option("", "--detail", help="Terminal tab: 'ssh:<host>' or 'cli:<program>' regex"),
+) -> None:
+    """Send an app or website to a category. Your rules come first, so they beat the built-in ones.
+
+    All the options you give must match. Example: scitime add-rule paper_reading --domain jov.arvojournals.org
+    """
+    fields = {"domain": domain, "app": app_, "bundle": bundle, "url": url, "title": title, "detail": detail}
+    try:
+        text = rules.add_rule_text(rules.user_rules_text(), category, fields)
+    except ValueError as e:
+        console.print(f"[red]ERROR[/red] {e}")
+        raise typer.Exit(1)
+    _save(text, f"rule → [bold]{category}[/bold]")
+
+
+@app.command()
+def which(
+    domain: str = typer.Option("", "--domain", help="e.g. www.sciencedirect.com"),
+    url: str = typer.Option("", "--url", help="Full URL; its domain is filled in for you"),
+    app_: str = typer.Option("", "--app"),
+    bundle: str = typer.Option("", "--bundle"),
+    title: str = typer.Option("", "--title"),
+    detail: str = typer.Option("", "--detail"),
+) -> None:
+    """Test the rules: which category would this app / website go to? Records nothing."""
+    from .probe import domain_of
+
+    seg = {"domain": domain.lower().removeprefix("www.") or (domain_of(url) if url else ""), "url": url, "app": app_,
+           "bundle": bundle or ("com.google.Chrome" if (domain or url) else ""), "title": title, "detail": detail}
+    cfg = rules.load()
+    m = cfg.match(seg)
+    if not m:
+        console.print("→ [bold]other[/bold] (no rule matches)")
+        return
+    i, r = m
+    pats = ", ".join(f"{f} ~ {p.pattern if len(p.pattern) < 60 else p.pattern[:57] + '...'}" for f, p in r.patterns.items())
+    console.print(f"→ [bold]{cfg.label(r.category)}[/bold] ({r.category}), rule #{i + 1}: {pats}")
+
+
 @app.command()
 def export(
     day: str = typer.Option("today", "--day"),

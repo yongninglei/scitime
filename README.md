@@ -22,7 +22,8 @@ the day by category, hour and the last two weeks.
 | Category | How it is recognised |
 |---|---|
 | **Vibe coding** | Claude desktop app, `claude`/`codex`/`aider` running in the front terminal tab, Cursor, VS Code, Zed, GitHub, claude.ai/code |
-| **Paper + AI writing** | Google Docs, Overleaf, Paperpile, ChatGPT / Claude / Gemini web chat, Word, Zotero, Obsidian, PubMed/bioRxiv/journals |
+| **Paper + AI writing** | Google Docs, Overleaf, ChatGPT / Claude / Gemini web chat, Word, Pages, Obsidian |
+| **Paper reading** | journal and preprint sites (ScienceDirect, Nature, Cell, eLife, Journal of Vision, PNAS, Frontiers, PLOS, Springer, Wiley, bioRxiv, arXiv, PubMed, Google Scholar, doi.org, university proxies …), Paperpile, Zotero, ReadCube, Mendeley |
 | **Server / data** | an `ssh`/`mosh` session in the front terminal tab, VS Code Remote-SSH windows, Citrix Workspace, Jupyter |
 | **Data analysis** | MATLAB, RStudio, JASP, SPSS, Stata, Prism, Fiji/ImageJ, FSLeyes/Freeview, local Streamlit/Shiny apps |
 | **Figures / drawing** | Affinity, Illustrator, Inkscape, Figma, BioRender |

@@ -25,6 +25,10 @@ color = "#7c5cff"
 label = "Paper + AI writing"
 color = "#2fa36b"
 
+[categories.paper_reading]
+label = "Paper reading"
+color = "#a0703a"
+
 [categories.figures]
 label = "Figures / drawing"
 color = "#0e9f9a"
@@ -75,7 +79,12 @@ app = "wechat|微信|whatsapp|telegram|mail|邮件|outlook|gmail|slack|messages|
 [[rule]]
 category = "paper_writing"
 bundle = "^iphone$"
-app = "docs|chatgpt|claude|gemini|paperpile|zotero|notion|obsidian|word"
+app = "docs|chatgpt|claude|gemini|notion|obsidian|word"
+
+[[rule]]
+category = "paper_reading"
+bundle = "^iphone$"
+app = "paperpile|zotero|readcube|papers|mendeley|pubmed"
 
 [[rule]]
 category = "browsing"
@@ -144,14 +153,24 @@ bundle = "com\\.anthropic\\.claude|com\\.todesktop\\.|com\\.microsoft\\.VSCode|d
 category = "vibe_coding"
 domain = "^github\\.com$|^gitlab\\.|^colab\\.research\\.google\\.com$"
 
-# --- paper writing (docs + AI chat + literature) ----------------------------
+# --- paper reading (journals, preprints, reference managers) ----------------
+# Journal of Vision is jov.arvojournals.org; university proxies (ezproxy, OCLC) count too.
+[[rule]]
+category = "paper_reading"
+domain = "paperpile\\.com$|pubmed|ncbi\\.nlm\\.nih\\.gov$|europepmc\\.org$|^scholar\\.google\\.|semanticscholar\\.org$|connectedpapers\\.com$|researchgate\\.net$|doi\\.org$|biorxiv\\.org$|medrxiv\\.org$|arxiv\\.org$|psyarxiv\\.com$|osf\\.io$|openreview\\.net$|sciencedirect\\.com$|elsevier\\.com$|cell\\.com$|nature\\.com$|science\\.org$|pnas\\.org$|elifesciences\\.org$|arvojournals\\.org$|jneurosci\\.org$|physiology\\.org$|plos\\.org$|frontiersin\\.org$|springer\\.com$|wiley\\.com$|oup\\.com$|cambridge\\.org$|sagepub\\.com$|tandfonline\\.com$|mdpi\\.com$|biomedcentral\\.com$|annualreviews\\.org$|apa\\.org$|direct\\.mit\\.edu$|thelancet\\.com$|nejm\\.org$|jamanetwork\\.com$|bmj\\.com$|ieee\\.org$|acm\\.org$|jstor\\.org$|royalsocietypublishing\\.org$|\\.idm\\.oclc\\.org$|ezproxy"
+
+[[rule]]
+category = "paper_reading"
+bundle = "org\\.zotero|com\\.paperpile|com\\.readcube|com\\.mendeley|com\\.mekentosj\\.papers|net\\.sourceforge\\.skim-app|com\\.readdle\\.PDFExpert|net\\.highlightsapp"
+
+# --- paper writing (docs + AI chat) ------------------------------------------
 [[rule]]
 category = "paper_writing"
-domain = "^docs\\.google\\.com$|overleaf\\.com$|paperpile\\.com$|^claude\\.ai$|^chatgpt\\.com$|^chat\\.openai\\.com$|^gemini\\.google\\.com$|^notebooklm\\.google\\.com$|^scholar\\.google\\.|pubmed|biorxiv\\.org$|arxiv\\.org$|doi\\.org$|sciencedirect\\.com$|nature\\.com$|elifesciences\\.org$"
+domain = "^docs\\.google\\.com$|overleaf\\.com$|^claude\\.ai$|^chatgpt\\.com$|^chat\\.openai\\.com$|^gemini\\.google\\.com$|^notebooklm\\.google\\.com$"
 
 [[rule]]
 category = "paper_writing"
-bundle = "com\\.microsoft\\.Word|com\\.apple\\.iWork\\.Pages|org\\.zotero|md\\.obsidian|com\\.openai\\.chat|com\\.google\\.GeminiMacOS"
+bundle = "com\\.microsoft\\.Word|com\\.apple\\.iWork\\.Pages|md\\.obsidian|com\\.openai\\.chat|com\\.google\\.GeminiMacOS"
 
 # --- social / video ---------------------------------------------------------
 [[rule]]

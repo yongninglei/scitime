@@ -10,7 +10,7 @@ from .report import DaySummary, fmt
 from .rules import Config
 
 # Categories that count as research work; the rest is shown as distraction or other.
-FOCUS = {"vibe_coding", "paper_writing", "data_analysis", "figures", "server"}
+FOCUS = {"vibe_coding", "paper_writing", "paper_reading", "data_analysis", "figures", "server"}
 DISTRACTION = {"browsing", "social"}
 
 CSS = """

@@ -24,6 +24,9 @@ def test_classify_examples():
     assert cat(detail="cli:claude", bundle="com.apple.Terminal") == "vibe_coding"
     assert cat(bundle="com.anthropic.claudefordesktop") == "vibe_coding"
     assert cat(bundle="com.google.Chrome", domain="docs.google.com") == "paper_writing"
+    for d in ("www.sciencedirect.com", "paperpile.com", "elifesciences.org", "www.nature.com", "jov.arvojournals.org"):
+        assert cat(bundle="com.google.Chrome", domain=d) == "paper_reading", d
+    assert cat(bundle="org.zotero.zotero", app="Zotero") == "paper_reading"
     assert cat(bundle="com.google.Chrome", domain="claude.ai", url="https://claude.ai/chat/1") == "paper_writing"
     assert cat(bundle="com.google.Chrome", domain="claude.ai", url="https://claude.ai/code/x") == "vibe_coding"
     assert cat(bundle="com.apple.Safari", domain="youtube.com") == "social"

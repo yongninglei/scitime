@@ -159,6 +159,29 @@ def test_add_category_and_rule():
         rules.add_rule_text(t, "grant_writing", {"app": "("})
 
 
+def test_sites_yaml(tmp_path):
+    import pytest
+
+    t = rules.add_site_text(rules.SITES_TEMPLATE, "paper_reading", "https://www.JOV.arvojournals.org/", CFG.categories)
+    t = rules.add_site_text(t, "vibe_coding", "github.com/my-lab", CFG.categories)
+    t = rules.add_site_text(t, "paper_reading", "journals.plos.org", CFG.categories)
+    assert "  - jov.arvojournals.org\n  - journals.plos.org\n" in t   # appended under its key
+    assert t.startswith(rules.SITES_TEMPLATE)                        # comments kept
+    (tmp_path / "rules.toml").write_text(rules.default_rules_text())
+    (tmp_path / "sites.yaml").write_text(t)
+    c = rules.load(tmp_path / "rules.toml")
+    assert c.classify({"bundle": "com.google.Chrome", "domain": "jov.arvojournals.org"}) == "paper_reading"
+    assert c.classify({"bundle": "com.google.Chrome", "domain": "github.com", "url": "https://github.com/my-lab/x"}) == "vibe_coding"
+    with pytest.raises(ValueError):
+        rules.add_site_text(t, "social", "journals.plos.org", CFG.categories)  # already listed
+    with pytest.raises(ValueError):
+        rules.add_site_text(t, "teaching", "moodle.example.edu", CFG.categories)  # no such category
+    (tmp_path / "sites.yaml").write_text("nope:\n  - x.org\n")
+    assert len(rules.load(tmp_path / "rules.toml").rules) == len(CFG.rules)  # broken file skipped
+    with pytest.raises(ValueError):
+        rules.load(tmp_path / "rules.toml", strict=True)
+
+
 def test_dashboard_has_every_day(tmp_path):
     from scitime import dashboard, demo
 

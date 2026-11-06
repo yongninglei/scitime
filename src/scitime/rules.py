@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import shutil
+import sys
 import tomllib
 from dataclasses import dataclass, field
 from importlib import resources
@@ -12,6 +13,7 @@ from pathlib import Path
 
 CONFIG_DIR = Path.home() / ".config" / "scitime"
 USER_RULES = CONFIG_DIR / "rules.toml"
+USER_SITES = CONFIG_DIR / "sites.yaml"  # website -> category; checked before every rule in rules.toml
 FIELDS = ("app", "bundle", "title", "url", "domain", "detail")
 
 
@@ -19,6 +21,7 @@ FIELDS = ("app", "bundle", "title", "url", "domain", "detail")
 class Rule:
     category: str
     patterns: dict[str, re.Pattern]
+    source: str = "rules.toml"
 
     def matches(self, seg: dict) -> bool:
         return all(p.search(seg.get(f) or "") for f, p in self.patterns.items())
@@ -95,10 +98,21 @@ def parse(text: str) -> Config:
     )
 
 
-def load(path: Path | None = None) -> Config:
+def load(path: Path | None = None, sites: Path | None = None, strict: bool = False) -> Config:
+    """Rules from rules.toml, with sites.yaml in front. A broken sites.yaml is skipped with a
+    warning (so a typo never stops the tracker) unless `strict`."""
     path = path or USER_RULES
+    sites = sites or path.with_name(USER_SITES.name)
     text = path.read_text() if path.exists() else default_rules_text()
-    return parse(text)
+    cfg = parse(text)
+    if sites.exists():
+        try:
+            cfg.rules = site_rules(sites.read_text(), cfg.categories) + cfg.rules
+        except Exception as e:  # ValueError or a YAML syntax error
+            if strict:
+                raise ValueError(f"{sites}: {e}") from None
+            print(f"scitime: ignoring {sites}: {e}", file=sys.stderr)
+    return cfg
 
 
 def init_user_rules() -> tuple[Path, bool]:
@@ -197,3 +211,134 @@ def save_user_rules(text: str) -> Path:
 
 def user_rules_text() -> str:
     return USER_RULES.read_text() if USER_RULES.exists() else default_rules_text()
+
+
+# --- sites.yaml: the simple way to put a website in a category -----------------------------
+
+SITES_TEMPLATE = """\
+# SciTime — your websites, sorted into your categories.
+#
+# Put a website under one of your category keys (list them with `uv run scitime categories`).
+# These are checked before every rule in rules.toml, so they always win.
+#
+#   jov.arvojournals.org     that site and all its subdomains (a leading www. is ignored)
+#   github.com/my-lab        only pages under that path
+#
+# Add one from the terminal:   uv run scitime add-site paper_reading jov.arvojournals.org
+# Test where a page goes:      uv run scitime which --url https://jov.arvojournals.org/article.aspx
+#
+# Example:
+#
+# paper_reading:
+#   - jov.arvojournals.org
+#   - journals.plos.org
+# vibe_coding:
+#   - github.com/my-lab
+"""
+
+
+def normalize_site(site: str) -> str:
+    """https://www.Example.org/lab/ -> example.org/lab"""
+    site = site.strip()
+    if "://" in site:
+        site = site.split("://", 1)[1]
+    host, _, path = site.partition("/")
+    host = host.lower().removeprefix("www.")
+    path = path.strip("/")
+    return f"{host}/{path}" if path else host
+
+
+def site_patterns(site: str) -> dict[str, str]:
+    """Regexes for one sites.yaml entry: a domain, or a domain followed by a path."""
+    host, _, path = normalize_site(site).partition("/")
+    if not PLAIN_DOMAIN.match(host):
+        raise ValueError(f"{site!r} is not a website like jov.arvojournals.org or github.com/my-lab "
+                         "(for anything fancier use `scitime add-rule`)")
+    if not path.strip("/"):
+        return {"domain": domain_pattern(host)}
+    return {"url": r"^https?://([^/]*\.)?" + re.escape(host) + "/" + re.escape(path)}
+
+
+def parse_sites(text: str, categories: dict) -> dict[str, list[str]]:
+    import yaml
+
+    data = yaml.safe_load(text) or {}
+    if not isinstance(data, dict):
+        raise ValueError("sites.yaml must be a mapping of category key -> list of websites")
+    out: dict[str, list[str]] = {}
+    seen: dict[str, str] = {}
+    for cat, sites in data.items():
+        if cat not in categories:
+            raise ValueError(f"sites.yaml: no category {cat!r}; existing keys: {', '.join(categories)}")
+        if sites is None:
+            sites = []
+        if not isinstance(sites, list):
+            raise ValueError(f"sites.yaml: {cat} must be a list of websites (lines starting with '- ')")
+        for s in sites:
+            s = str(s).strip()
+            site_patterns(s)
+            key = normalize_site(s)
+            if key in seen and seen[key] != cat:
+                raise ValueError(f"sites.yaml: {s!r} is listed under both {seen[key]} and {cat}")
+            seen[key] = cat
+            out.setdefault(cat, []).append(s)
+    return out
+
+
+def site_rules(text: str, categories: dict) -> list[Rule]:
+    return [
+        Rule(cat, {f: re.compile(p, re.I) for f, p in site_patterns(s).items()}, source=f"sites.yaml: {s}")
+        for cat, sites in parse_sites(text, categories).items() for s in sites
+    ]
+
+
+def add_site_text(text: str, category: str, site: str, categories: dict) -> str:
+    """Add `site` under `category` in sites.yaml text, keeping the user's comments and layout."""
+    site_patterns(site)
+    site = normalize_site(site)
+    current = parse_sites(text, categories)
+    if category not in categories:
+        raise ValueError(f"no category {category!r}; existing keys: {', '.join(categories)}")
+    for cat, sites in current.items():
+        if site in (normalize_site(s) for s in sites):
+            raise ValueError(f"{site} is already in sites.yaml under {cat}")
+    lines = text.splitlines()
+    head = next((i for i, ln in enumerate(lines) if re.match(rf"^{re.escape(category)}:\s*(#.*)?$", ln)), None)
+    if head is None:
+        if category in current:
+            raise ValueError(f"sites.yaml: {category} is not written as a '- ' list; edit it by hand")
+        if lines and lines[-1].strip():
+            lines.append("")
+        lines += [f"{category}:", f"  - {site}"]
+    else:
+        last = head
+        for i in range(head + 1, len(lines)):
+            if lines[i].strip() and not lines[i][0].isspace():
+                break
+            if lines[i].strip().startswith("- "):
+                last = i
+        lines.insert(last + 1, f"  - {site}")
+    new = "\n".join(lines) + "\n"
+    parse_sites(new, categories)
+    return new
+
+
+def user_sites_text() -> str:
+    return USER_SITES.read_text() if USER_SITES.exists() else SITES_TEMPLATE
+
+
+def save_user_sites(text: str) -> Path:
+    """Write sites.yaml, keeping the previous version as sites.yaml.bak."""
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    if USER_SITES.exists():
+        shutil.copyfile(USER_SITES, USER_SITES.with_suffix(".yaml.bak"))
+    USER_SITES.write_text(text)
+    return USER_SITES
+
+
+def init_user_sites() -> tuple[Path, bool]:
+    if USER_SITES.exists():
+        return USER_SITES, False
+    CONFIG_DIR.mkdir(parents=True, exist_ok=True)
+    USER_SITES.write_text(SITES_TEMPLATE)
+    return USER_SITES, True

@@ -76,9 +76,27 @@ asks for Automation permission for Mail) and has the HTML dashboard attached.
 - `max_hours` — e.g. browsing + social ≤ 1.5 h. A macOS notification appears as soon
   as the day goes over, and the digest flags it.
 
-## Your own categories
+## Your own websites and categories
 
-Add a category, send apps or websites to it, and check where something would go:
+The simplest way is to list websites under the categories you already have, in
+`~/.config/scitime/sites.yaml`:
+
+```yaml
+paper_reading:
+  - jov.arvojournals.org     # and its subdomains
+  - journals.plos.org
+vibe_coding:
+  - github.com/my-lab        # only pages under this path
+```
+
+Or let the command write it for you:
+
+```bash
+uv run scitime add-site paper_reading jov.arvojournals.org journals.plos.org
+uv run scitime sites                                        # what is in sites.yaml
+```
+
+Sites listed there win over every built-in rule. For new categories, apps, or regex rules:
 
 ```bash
 uv run scitime categories                                   # what exists
@@ -93,7 +111,8 @@ previous file is kept as `rules.toml.bak`. Rules apply when a report is made, so
 days are re-sorted too.
 
 **Or ask your AI.** Open the folder in Claude Code, Codex or a similar tool and ask, for
-example, *"add a Grant writing category for the ERC portal, counted as focus time"*.
+example, *"count jov.arvojournals.org and journals.plos.org as paper reading"* or
+*"add a Grant writing category for the ERC portal, counted as focus time"*.
 [docs/custom_categories.md](docs/custom_categories.md) is the full guide for you and
 your AI. It covers every field, examples, hand-editing, and the rule that an assistant
 never reads your activity data. [AGENTS.md](AGENTS.md) points assistants to it.

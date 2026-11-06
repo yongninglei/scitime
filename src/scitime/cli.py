@@ -44,12 +44,12 @@ def _parse_day(day: str) -> dt.date:
 
 @app.command()
 def init() -> None:
-    """Copy the default rules to ~/.config/scitime/rules.toml so you can edit them."""
-    path, created = rules.init_user_rules()
-    if created:
-        console.print(f"[green]saved[/green] {path}")
-    else:
-        console.print(f"[yellow]SKIP[/yellow] {path} already exists (not overwritten)")
+    """Copy the default rules to ~/.config/scitime/rules.toml and start an empty sites.yaml."""
+    for path, created in (rules.init_user_rules(), rules.init_user_sites()):
+        if created:
+            console.print(f"[green]saved[/green] {path}")
+        else:
+            console.print(f"[yellow]SKIP[/yellow] {path} already exists (not overwritten)")
 
 
 @app.command()
@@ -248,6 +248,49 @@ def add_rule(
     _save(text, f"rule → [bold]{category}[/bold]")
 
 
+@app.command("add-site")
+def add_site(
+    category: str = typer.Argument(..., help="Category key (see `scitime categories`), e.g. paper_reading"),
+    sites: list[str] = typer.Argument(..., help="One or more websites: jov.arvojournals.org, github.com/my-lab"),
+) -> None:
+    """Put websites in a category (writes ~/.config/scitime/sites.yaml; these win over every rule).
+
+    Example: scitime add-site paper_reading jov.arvojournals.org journals.plos.org
+    """
+    cats = rules.parse(rules.user_rules_text()).categories
+    text = rules.user_sites_text()
+    try:
+        for s in sites:
+            text = rules.add_site_text(text, category, s, cats)
+    except ValueError as e:
+        console.print(f"[red]ERROR[/red] {e}")
+        raise typer.Exit(1)
+    path = rules.save_user_sites(text)
+    names = ", ".join(rules.normalize_site(s) for s in sites)
+    console.print(f"[green]saved[/green] {names} → [bold]{category}[/bold] in {path}")
+    console.print("[dim]Past days are re-sorted too; the menu bar picks it up within a minute.[/dim]")
+
+
+@app.command("sites")
+def sites_cmd() -> None:
+    """List the websites in your sites.yaml, by category."""
+    cfg = rules.parse(rules.user_rules_text())
+    if not rules.USER_SITES.exists():
+        console.print(f"No {rules.USER_SITES} yet. Add one with: scitime add-site paper_reading jov.arvojournals.org")
+        return
+    try:
+        data = rules.parse_sites(rules.USER_SITES.read_text(), cfg.categories)
+    except ValueError as e:
+        console.print(f"[red]ERROR[/red] {e}")
+        raise typer.Exit(1)
+    for cat, sites in data.items():
+        console.print(f"[bold]{cfg.label(cat)}[/bold] ({cat})")
+        for s in sites:
+            console.print(f"  - {s}")
+    if not data:
+        console.print(f"{rules.USER_SITES} has no websites yet.")
+
+
 @app.command()
 def which(
     domain: str = typer.Option("", "--domain", help="e.g. www.sciencedirect.com"),
@@ -262,14 +305,19 @@ def which(
 
     seg = {"domain": domain.lower().removeprefix("www.") or (domain_of(url) if url else ""), "url": url, "app": app_,
            "bundle": bundle or ("com.google.Chrome" if (domain or url) else ""), "title": title, "detail": detail}
-    cfg = rules.load()
+    try:
+        cfg = rules.load(strict=True)
+    except ValueError as e:
+        console.print(f"[red]ERROR[/red] {e}")
+        raise typer.Exit(1)
     m = cfg.match(seg)
     if not m:
         console.print("→ [bold]other[/bold] (no rule matches)")
         return
     i, r = m
     pats = ", ".join(f"{f} ~ {p.pattern if len(p.pattern) < 60 else p.pattern[:57] + '...'}" for f, p in r.patterns.items())
-    console.print(f"→ [bold]{cfg.label(r.category)}[/bold] ({r.category}), rule #{i + 1}: {pats}")
+    where_ = r.source if r.source.startswith("sites.yaml") else f"rules.toml rule #{i + 1 - sum(x.source != 'rules.toml' for x in cfg.rules)}: {pats}"
+    console.print(f"→ [bold]{cfg.label(r.category)}[/bold] ({r.category}), from {where_}")
 
 
 @app.command()

@@ -1,5 +1,6 @@
 # Derived from pyproject.toml (source of truth). Keep in sync.
 typer>=0.12
 rich>=13
+pyyaml>=6
 pyobjc-framework-Cocoa>=10; sys_platform == 'darwin'
 pyobjc-framework-Quartz>=10; sys_platform == 'darwin'

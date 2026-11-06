@@ -1,16 +1,63 @@
-# Your own categories and rules
+# Your own websites, categories and rules
 
-SciTime sorts every app and website into a category with a list of rules in
-`~/.config/scitime/rules.toml`. You can add categories and rules with four commands,
-by hand, or by asking an AI assistant. This page is written for both you and your AI.
+SciTime sorts every app and website into a category. You can change how it sorts things
+in three ways, from simplest to most flexible:
 
-Rules are applied when a report is made, not when time is recorded, so a new rule also
-re-sorts your past days. The menu bar picks a change up within a minute.
+1. **`sites.yaml`**: a plain list of websites under the categories you already have.
+   This covers most needs.
+2. **Commands**: `add-site`, `add-category` and `add-rule` edit the files for you and
+   check them.
+3. **`rules.toml`**: regex rules over app names, bundle ids, URLs, window titles and
+   terminal tabs.
 
-## The four commands
+You can do each of these yourself or ask an AI assistant. This page is written for both.
+
+Changes apply when a report is made, not when time is recorded, so they also re-sort
+your past days. The menu bar picks a change up within a minute.
+
+## Websites: `~/.config/scitime/sites.yaml`
+
+The keys are your category keys (`uv run scitime categories` lists them). Under each key
+goes a list of websites:
+
+```yaml
+paper_reading:
+  - jov.arvojournals.org      # that site and all its subdomains; a leading www. is ignored
+  - journals.plos.org
+  - pubs.myjournal.org
+vibe_coding:
+  - github.com/my-lab         # only pages that start with this path
+communication:
+  - teams.microsoft.com
+```
+
+- **No new categories here.** The keys must already exist, so the main categories stay
+  the same. To make a new one, use `scitime add-category` first (see below).
+- **These win.** `sites.yaml` is checked before every rule in `rules.toml`, so listing
+  a site here moves it out of whatever built-in category it had.
+- **One category per site.** If a site is listed under two categories, that is an
+  error.
+- **Plain names only.** Write `https://`, `www.` or a trailing `/` if you like; they are
+  stripped. For anything that needs a regex, use `add-rule`.
+
+From the terminal, which creates the file, keeps your comments, and keeps a
+`sites.yaml.bak`:
+
+```bash
+uv run scitime add-site paper_reading jov.arvojournals.org journals.plos.org
+uv run scitime sites                                              # list them
+uv run scitime which --url https://jov.arvojournals.org/article  # → Paper reading, from sites.yaml
+```
+
+If you edit the file by hand and break it (a typo in a key, bad indentation), the tracker
+and menu bar keep running without it and print a warning to their log. Run
+`uv run scitime sites` to see the exact error.
+
+## Categories and regex rules: the commands
 
 ```bash
 uv run scitime categories                      # list categories: key, label, colour, rules, focus
+uv run scitime add-site KEY site.org [more.org ...]   # website -> category (sites.yaml)
 uv run scitime add-category KEY [--label "Shown name"] [--color "#rrggbb"] [--focus | --no-focus]
 uv run scitime add-rule KEY --domain site.org  # or --app / --bundle / --url / --title / --detail
 uv run scitime which --url https://site.org/x  # test: where would this go? records nothing
@@ -25,8 +72,8 @@ Run them from the SciTime folder (or add `--project /path/to/scitime` after `uv 
 - Every change is checked before it is saved: the file must still be valid and every
   regex must compile. The previous version is kept as `rules.toml.bak`.
 - Your rules go in a "my rules" block **above** the built-in rules. The first matching
-  rule wins, so your rules always beat the defaults. This is how you move a site out of
-  a built-in category.
+  rule wins, so your rules always beat the defaults. Only `sites.yaml` comes before
+  them.
 
 ## Examples
 
@@ -101,9 +148,14 @@ names a category that doesn't exist. Change the copy in `~/.config/scitime/`, no
 You can paste something like this into Claude Code, Codex or a similar tool opened in
 the SciTime folder:
 
+> Read `docs/custom_categories.md`. Count jov.arvojournals.org, journals.plos.org and
+> my lab's GitHub (github.com/my-lab) as the right categories. Then show me
+> `scitime which` for each one.
+
+or
+
 > Read `docs/custom_categories.md`. Add a category "Grant writing" (focus time) for the
 > ERC and Horizon Europe portals and for Word windows whose title contains "proposal".
-> Then show me `scitime which` for each one.
 
 ### Rules for the AI
 
@@ -112,14 +164,18 @@ the SciTime folder:
    `scitime/` folder, or the output of `scitime report`, `digest`, `now` or `dashboard`.
    It is the user's browsing history. The commands on this page never need it. If the
    task seems to need it, ask the user to look themselves.
-2. Use the four commands above rather than editing the file by hand. They validate,
-   escape and back up for you, and put the rule where it wins.
-3. Run `scitime categories` first to see the existing keys. Reuse a category when one
-   fits rather than making a near-duplicate.
+2. **Websites go in `sites.yaml`, using `scitime add-site`.** Use `add-rule` only for
+   apps, window titles, terminal tabs, or URLs that need a regex. The commands validate,
+   keep comments, and back up for you.
+3. **Keep the categories the user has.** Run `scitime categories` first and put things
+   in an existing category. Create one with `add-category` only when the user asks for
+   a new category.
 4. After each change, check it with `scitime which` using a made-up URL or app name, and
    show the user the result.
 5. Prefer `--domain` for websites and `--bundle` (or `--app`) for apps. Use `--title`
    only when nothing else can tell the activity apart, because titles need Screen
    Recording permission and can contain private text.
-6. To undo a change, the previous file is `~/.config/scitime/rules.toml.bak`. Ask the
-   user before restoring it.
+6. To undo a change, the previous files are `~/.config/scitime/sites.yaml.bak` and
+   `rules.toml.bak`. Ask the user before restoring one.
+7. Never edit `src/scitime/default_rules.toml` for a user's own sites. It is the template
+   for every new install.

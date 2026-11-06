@@ -7,7 +7,7 @@ import time
 
 from rich.console import Console
 
-from . import probe, store
+from . import probe, rules, store
 from .rules import Config
 
 AWAY_BUNDLES = {"com.apple.loginwindow", "com.apple.ScreenSaver.Engine"}
@@ -83,9 +83,11 @@ class Tracker:
             t = time.time()
             try:
                 self.tick(probe.sample(), t)
-                if self.cfg.alerts and t - self.last_check >= 60:
+                if t - self.last_check >= 60:
                     self.last_check = t
-                    self.check_limits(t)
+                    self.cfg = rules.load()  # pick up edits to rules.toml / sites.yaml; a broken file keeps the old cfg
+                    if self.cfg.alerts:
+                        self.check_limits(t)
                 if self.cfg.phone_dir and t - self.last_publish >= 600:
                     self.last_publish = t
                     self.publish(t)

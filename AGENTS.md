@@ -12,7 +12,7 @@ browsing and app history.
   Keep to the existing categories (`scitime categories`). Check the result with
   `scitime which --url ...`.
 - **For anything else** (new categories, apps, window titles, regex rules), follow
-  [docs/custom_categories.md](docs/custom_categories.md): `add-category`, `add-rule`,
+  [docs/custom_categories.md](docs/custom_categories.md) (中文: [custom_categories.zh-CN.md](docs/custom_categories.zh-CN.md)): `add-category`, `add-rule`,
   `which`. Don't hand-edit the files unless the commands can't express the change.
 - The user's files are `~/.config/scitime/sites.yaml` (websites, checked first) and
   `~/.config/scitime/rules.toml` (categories and rules). `src/scitime/default_rules.toml`

@@ -1,93 +1,106 @@
-# iPhone 设置（快捷指令）
+# iPhone setup (Shortcuts)
 
-iPhone 不允许普通 app 读取其他 app 的使用时间，所以用「快捷指令 → 自动化」记录：
-每次打开/关闭某个 app，就往 iCloud 里的一个文本文件追加一行。Mac 上的 scitime 读取这个
-文件，把手机时间和电脑时间加在一起，再把合并后的仪表盘写回同一个 iCloud 文件夹，手机
-在「文件」app 里就能看。两边只要联网，iCloud 会自动同步，不经过任何第三方服务器。
+**English** · [中文](iphone_setup.zh-CN.md)
+
+iOS does not let ordinary apps read how long other apps are used, so SciTime uses
+**Shortcuts → Automation** instead. Each time you open or close an app, a line is appended
+to a text file in iCloud. SciTime on the Mac reads that file, adds the phone time to the
+computer time, and writes the combined dashboard back to the same iCloud folder, so you can
+open it on the phone in the Files app. iCloud syncs both ways on its own; no third-party
+server is involved.
 
 ```
-iPhone 快捷指令 ──追加一行──▶ iCloud 云盘/快捷指令/scitime/phone_events.txt ──▶ Mac scitime
-iPhone「文件」app ◀──────── iCloud 云盘/快捷指令/scitime/scitime.html ◀──每 10 分钟── Mac scitime
+iPhone Shortcuts ──append a line──▶ iCloud Drive/Shortcuts/scitime/phone_events.txt ──▶ SciTime on the Mac
+iPhone Files app ◀───────────────── iCloud Drive/Shortcuts/scitime/scitime.html ◀──every 10 min── SciTime on the Mac
 ```
 
-一共要做：1 个快捷指令 + 每个 app 1 个「打开」自动化 + 1 个「关闭」自动化。大约 10 分钟。
+You need one shortcut, one "Is Opened" automation per app, and one "Is Closed" automation.
+It takes about 10 minutes.
 
 ---
 
-## 第 1 步：建一个快捷指令「scitime」（只做一次）
+## Step 1: make a shortcut called "scitime" (once)
 
-1. 打开「快捷指令」app →「快捷指令」标签 → 右上角 **＋**。
-2. 顶部名字改成 **scitime**。（如果第 3 步找不到变量「快捷指令输入」：点名字旁的 ⌄ →
-   「详细信息」，让它接收「文本」输入。）
-3. 添加操作 **文本**，在文本框里：
-   - 插入变量 **当前日期**，然后点一下这个变量 → 日期格式选 **ISO 8601**，打开 **包括 ISO 8601 时间**；
-   - 紧接着输入一个英文逗号 `,`；
-   - 再插入变量 **快捷指令输入**。
-   
-   结果看起来是：`[当前日期],[快捷指令输入]`
-4. 添加操作 **追加到文本文件**（Append to Text File）：
-   - 追加内容：上一步的 **文本**
-   - 文件夹：**快捷指令**（Shortcuts）
-   - 文件路径：`scitime/phone_events.txt`
-   - 打开 **新建一行**（Make New Line）
-5. 完成。
+1. Open the **Shortcuts** app → **Shortcuts** tab → **＋** at the top right.
+2. Rename it **scitime**. (If you can't find the **Shortcut Input** variable in step 3,
+   tap ⌄ next to the name → **Details**, and let it receive **Text** input.)
+3. Add a **Text** action. In its text box:
+   - insert the **Current Date** variable, tap it, set the date format to **ISO 8601** and
+     turn on **Include ISO 8601 Time**;
+   - type a comma `,` right after it;
+   - insert the **Shortcut Input** variable.
 
-## 第 2 步：每个要统计的 app 建一个「打开」自动化
+   It should look like: `[Current Date],[Shortcut Input]`
+4. Add an **Append to Text File** action:
+   - Append: the **Text** from the previous step
+   - Folder: **Shortcuts**
+   - File path: `scitime/phone_events.txt`
+   - Turn on **Make New Line**
+5. Done.
 
-以抖音为例：
+## Step 2: an "Is Opened" automation for each app you want to count
 
-1. 「自动化」标签 → **＋** → **App**。
-2. 「App」选 **抖音**；只勾 **已打开**；选 **立即运行**（不要选「运行前询问」）；关掉「运行时通知」。→ 下一步。
-3. **新建空白自动化** → 添加操作 **文本**，内容填 `open,Douyin`。
-4. 添加操作 **运行快捷指令** → 选 **scitime**，输入选上一步的 **文本**。
-5. 完成。
+Instagram as an example:
 
-其他 app 重复，只换第 3 步的名字。名字要和下表一致（大小写无所谓，中文名也行），
-这样 Mac 才能分对类别：
+1. **Automation** tab → **＋** → **App**.
+2. Choose **Instagram** as the app. Tick only **Is Opened**, choose **Run Immediately**
+   (not "Run After Confirmation"), and turn off **Notify When Run**. → **Next**.
+3. **New Blank Automation** → add a **Text** action with `open,Instagram`.
+4. Add a **Run Shortcut** action → choose **scitime**, with the **Text** from the previous
+   step as its input.
+5. Done.
 
-| App | 第 3 步填 | 类别 |
+Repeat for the other apps, changing only the name in step 3. Use the names in this table
+(capitals don't matter) so the Mac sorts them into the right category:
+
+| App | Text in step 3 | Category |
 |---|---|---|
-| 抖音 | `open,Douyin` | 社交/视频 |
-| Instagram | `open,Instagram` | 社交/视频 |
-| 小红书 | `open,Xiaohongshu` | 社交/视频 |
-| 哔哩哔哩 | `open,Bilibili` | 社交/视频 |
-| YouTube | `open,YouTube` | 社交/视频 |
-| X / 微博 / 知乎 | `open,X` / `open,Weibo` / `open,Zhihu` | 社交/视频 |
-| 微信 | `open,WeChat` | 邮件/聊天 |
-| 邮件 / Gmail / Outlook | `open,Mail` / `open,Gmail` / `open,Outlook` | 邮件/聊天 |
-| Safari / Chrome | `open,Safari` / `open,Chrome` | 浏览 |
-| ChatGPT / Claude / Google 文档 | `open,ChatGPT` / `open,Claude` / `open,Docs` | 论文+AI 写作 |
+| Instagram | `open,Instagram` | Social / video |
+| TikTok / Douyin | `open,TikTok` / `open,Douyin` | Social / video |
+| YouTube | `open,YouTube` | Social / video |
+| X / Reddit / Facebook | `open,X` / `open,Reddit` / `open,Facebook` | Social / video |
+| Xiaohongshu / Bilibili / Weibo | `open,Xiaohongshu` / `open,Bilibili` / `open,Weibo` | Social / video |
+| WhatsApp / Telegram / WeChat | `open,WhatsApp` / `open,Telegram` / `open,WeChat` | Mail / chat |
+| Mail / Gmail / Outlook | `open,Mail` / `open,Gmail` / `open,Outlook` | Mail / chat |
+| Safari / Chrome | `open,Safari` / `open,Chrome` | Browsing |
+| ChatGPT / Claude / Google Docs | `open,ChatGPT` / `open,Claude` / `open,Docs` | Paper + AI writing |
+| Paperpile / Zotero | `open,Paperpile` / `open,Zotero` | Paper reading |
 
-别的 app 也可以加，名字随便起；不在规则里的会算到「Other」。想改分类就编辑
-Mac 上的 `~/.config/scitime/rules.toml` 里 `bundle = "^iphone$"` 那几条规则。
+You can add other apps with any name. Apps that no rule knows count as "Other". To change
+how they are sorted, edit the `bundle = "^iphone$"` rules in `~/.config/scitime/rules.toml`
+on the Mac.
 
-## 第 3 步：一个「关闭」自动化（覆盖所有 app）
+## Step 3: one "Is Closed" automation (for all apps)
 
-1. 「自动化」→ **＋** → **App**。
-2. 「App」里把第 2 步的 **所有 app 都选上**；只勾 **已关闭**；**立即运行**。→ 下一步。
-3. 新建空白自动化 → 操作 **文本** 内容 `close` → 操作 **运行快捷指令** 选 **scitime**，输入选 **文本**。
+1. **Automation** → **＋** → **App**.
+2. Choose **all the apps from step 2**. Tick only **Is Closed**, **Run Immediately**. → **Next**.
+3. New Blank Automation → a **Text** action with `close` → a **Run Shortcut** action with
+   **scitime**, input **Text**.
 
-> 手机同一时间只有一个 app 在前台，所以「打开下一个 app」也会结束上一个。锁屏时如果
-> 没触发「已关闭」，单次最多算 120 分钟（`rules.toml` 里 `max_session_minutes` 可改）。
+> Only one app is in front at a time, so opening the next app also ends the previous one.
+> If "Is Closed" doesn't fire when the phone locks, one session counts for at most 120
+> minutes (change `max_session_minutes` in `rules.toml`).
 
-## 第 4 步：在手机上看合并后的时间
+## Step 4: see the combined time on the phone
 
-- 「文件」app → **iCloud 云盘 → 快捷指令 → scitime → scitime.html**，点开即可。
-- 想放到主屏幕：新建快捷指令「看时间」→ 操作 **获取文件**（快捷指令文件夹，路径
-  `scitime/scitime.html`，关掉「显示文档选择器」）→ 操作 **快速查看** → 分享 →
-  **添加到主屏幕**。
+- **Files** app → **iCloud Drive → Shortcuts → scitime → scitime.html**, and tap it.
+- To put it on the Home Screen: make a shortcut "My time" → **Get File** (Shortcuts folder,
+  path `scitime/scitime.html`, turn off **Show Document Picker**) → **Quick Look** →
+  Share → **Add to Home Screen**.
 
-Mac 上 scitime 在运行时每 10 分钟更新一次这个页面；Mac 上运行 `uv run scitime dashboard`
-会立即更新。
+While SciTime runs on the Mac, this page is updated every 10 minutes. Running
+`uv run scitime dashboard` on the Mac updates it straight away.
 
-## 第 5 步：检查
+## Step 5: check it
 
-1. 在手机上打开抖音，过一会儿退出。
-2. Mac 上：
+1. Open Instagram on the phone, then leave it after a moment.
+2. On the Mac:
    ```bash
    cat ~/Library/Mobile\ Documents/iCloud~is~workflow~my~workflows/Documents/scitime/phone_events.txt
    uv run scitime report
    ```
-   应该看到两行（`open,Douyin` 和 `close`），报告里「Social / video」的 📱 一列有时间。
+   You should see two lines (`open,Instagram` and `close`), and time in the 📱 column for
+   "Social / video" in the report.
 
-如果文件里的日期不是 `2026-11-01T21:03:05+01:00` 这种格式，回到第 1 步检查日期格式。
+If the dates in the file don't look like `2026-11-01T21:03:05+01:00`, go back to step 1 and
+check the date format.

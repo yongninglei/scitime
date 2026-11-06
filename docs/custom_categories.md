@@ -1,5 +1,7 @@
 # Your own websites, categories and rules
 
+**English** · [中文](custom_categories.zh-CN.md)
+
 SciTime sorts every app and website into a category. You can change how it sorts things
 in three ways, from simplest to most flexible:
 

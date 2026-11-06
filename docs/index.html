@@ -66,6 +66,14 @@ pre .c { color:#7f849c; }
 .steps { display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
 @media (max-width: 760px) { .steps { grid-template-columns: 1fr; } nav .links { display:none; }
   .window iframe { height: 620px; } }
+.lang { display:inline-flex; border:1px solid var(--line); border-radius:99px; overflow:hidden;
+        background:var(--card); font-size:13px; }
+.lang button { font:inherit; border:0; background:none; color:var(--muted); padding:5px 11px; cursor:pointer; }
+.lang button[aria-pressed="true"] { background:var(--soft); color:var(--accent); font-weight:650; }
+.right { display:flex; align-items:center; gap:20px; }
+html[lang="zh-CN"] body { font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB",
+       "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; }
+html[lang="zh-CN"] h1 { letter-spacing:-.01em; }
 .donate { text-align:center; }
 .donate .btn { background:#ffdd00; color:#1d1f2b; border:none; }
 footer { color:var(--muted); font-size:13.5px; text-align:center; padding: 72px 0 40px; }
@@ -75,20 +83,23 @@ footer { color:var(--muted); font-size:13.5px; text-align:center; padding: 72px 
 <div class="wrap">
   <nav>
     <a class="brand" href="#"><span class="logo">⚗︎</span>SciTime</a>
-    <div class="links"><a href="#features">Features</a><a href="#categories">Categories</a>
-      <a href="#privacy">Privacy</a><a href="#install">Install</a>
-      <a href="https://github.com/yongninglei/scitime">GitHub</a><a href="#donate">☕ Donate</a></div>
+    <div class="right">
+    <div class="links"><a href="#features" data-i18n="nav.features">Features</a><a href="#categories" data-i18n="nav.categories">Categories</a>
+      <a href="#privacy" data-i18n="nav.privacy">Privacy</a><a href="#install" data-i18n="nav.install">Install</a>
+      <a href="https://github.com/yongninglei/scitime">GitHub</a><a href="#donate" data-i18n="nav.donate">☕ Donate</a></div>
+    <div class="lang" role="group" aria-label="Language"><button data-lang="en" aria-pressed="true">EN</button><button data-lang="zh" aria-pressed="false">中文</button></div>
+    </div>
   </nav>
 
   <header class="hero">
-    <span class="badge">🔬 Free · open source · macOS</span>
-    <h1>Where does your<br><span>research day</span> go?</h1>
-    <p class="lead">SciTime is a scientific activity monitor. It quietly sorts your screen time into
+    <span class="badge" data-i18n="hero.badge">🔬 Free · open source · macOS</span>
+    <h1 data-i18n="hero.h1">Where does your<br><span>research day</span> go?</h1>
+    <p class="lead" data-i18n="hero.lead">SciTime is a scientific activity monitor. It quietly sorts your screen time into
       coding with AI, writing papers, analysing data, making figures, running jobs on the cluster —
       and the browsing in between.</p>
     <div class="cta">
-      <a class="btn primary" href="#install">Get started</a>
-      <a class="btn" href="demo.html">Open the live demo ↗</a>
+      <a class="btn primary" href="#install" data-i18n="hero.start">Get started</a>
+      <a class="btn" href="demo.html" data-i18n="hero.demo">Open the live demo ↗</a>
       <a class="btn" href="https://github.com/yongninglei/scitime">★ GitHub</a>
     </div>
     <div class="window"><div class="bar"><i></i><i></i><i></i></div>
@@ -96,94 +107,169 @@ footer { color:var(--muted); font-size:13.5px; text-align:center; padding: 72px 
   </header>
 
   <section id="features">
-    <h2>Built for researchers</h2>
-    <p class="sub">Generic screen-time apps tell you "Chrome: 6 hours". SciTime tells you how much
+    <h2 data-i18n="features.h2">Built for researchers</h2>
+    <p class="sub" data-i18n="features.sub">Generic screen-time apps tell you "Chrome: 6 hours". SciTime tells you how much
       of that was Overleaf, PubMed, your Streamlit app or YouTube.</p>
     <div class="grid">
-      <div class="card"><div class="ic">🧠</div><h3>Knows research tools</h3>
-        <p>Overleaf, Zotero, MATLAB, RStudio, Jupyter, Fiji, FSLeyes, BioRender, Affinity — and
+      <div class="card"><div class="ic">🧠</div><h3 data-i18n="f.tools.h">Knows research tools</h3>
+        <p data-i18n="f.tools.p">Overleaf, Zotero, MATLAB, RStudio, Jupyter, Fiji, FSLeyes, BioRender, Affinity — and
           AI assistants, split into coding and writing.</p></div>
-      <div class="card"><div class="ic">🖥️</div><h3>Sees your terminal</h3>
-        <p>An <code>ssh</code> session counts as cluster time, <code>claude</code> or
+      <div class="card"><div class="ic">🖥️</div><h3 data-i18n="f.term.h">Sees your terminal</h3>
+        <p data-i18n="f.term.p">An <code>ssh</code> session counts as cluster time, <code>claude</code> or
           <code>codex</code> in the front tab as AI-assisted coding.</p></div>
-      <div class="card"><div class="ic">⏱</div><h3>Lives in the menu bar</h3>
-        <p>Today's total at a glance. Click for each category, the top sites and how you are doing
+      <div class="card"><div class="ic">⏱</div><h3 data-i18n="f.bar.h">Lives in the menu bar</h3>
+        <p data-i18n="f.bar.p">Today's total at a glance. Click for each category, the top sites and how you are doing
           on your goals.</p></div>
-      <div class="card"><div class="ic">🎯</div><h3>Goals and limits</h3>
-        <p>"Write at least 4 h", "browse at most 1.5 h". A notification when you cross a limit and
+      <div class="card"><div class="ic">🎯</div><h3 data-i18n="f.goals.h">Goals and limits</h3>
+        <p data-i18n="f.goals.p">"Write at least 4 h", "browse at most 1.5 h". A notification when you cross a limit and
           an evening digest by email.</p></div>
-      <div class="card"><div class="ic">📱</div><h3>iPhone too</h3>
-        <p>Optional Shortcuts automations add phone time to the same day — no app to install, no
+      <div class="card"><div class="ic">📱</div><h3 data-i18n="f.phone.h">iPhone too</h3>
+        <p data-i18n="f.phone.p">Optional Shortcuts automations add phone time to the same day — no app to install, no
           developer account.</p></div>
-      <div class="card"><div class="ic">✍️</div><h3>Your own rules</h3>
-        <p>One TOML file of regexes over app, URL, window title and terminal job. Edit it and past
-          days are re-sorted too.</p></div>
+      <div class="card"><div class="ic">✍️</div><h3 data-i18n="f.rules.h">Your own rules</h3>
+        <p data-i18n="f.rules.p">List websites under a category in <code>sites.yaml</code>, or ask your AI to set it up.
+          Past days are re-sorted too.</p></div>
     </div>
   </section>
 
   <section id="categories">
-    <h2>Categories out of the box</h2>
-    <p class="sub">Rename them, recolour them or add your own in <code>rules.toml</code>.</p>
+    <h2 data-i18n="cats.h2">Categories out of the box</h2>
+    <p class="sub" data-i18n="cats.sub">Rename them, recolour them or add your own in <code>sites.yaml</code> and <code>rules.toml</code>.</p>
     <div class="cats">
-      <div class="cat"><span class="d" style="background:#7c5cff"></span><div><b>Vibe coding</b><small>Claude Code, Codex, Cursor, VS Code, GitHub</small></div></div>
-      <div class="cat"><span class="d" style="background:#2fa36b"></span><div><b>Paper + AI writing</b><small>Overleaf, Google Docs, Word, ChatGPT/Claude chat</small></div></div>
-      <div class="cat"><span class="d" style="background:#a0703a"></span><div><b>Paper reading</b><small>ScienceDirect, Nature, eLife, Journal of Vision, arXiv, PubMed, Paperpile, Zotero</small></div></div>
-      <div class="cat"><span class="d" style="background:#b4559b"></span><div><b>Data analysis</b><small>MATLAB, RStudio, JASP, SPSS, Prism, Fiji, local Streamlit apps</small></div></div>
-      <div class="cat"><span class="d" style="background:#0e9f9a"></span><div><b>Figures / drawing</b><small>Affinity, Illustrator, Inkscape, Figma, BioRender</small></div></div>
-      <div class="cat"><span class="d" style="background:#e07b39"></span><div><b>Server / HPC</b><small>ssh and mosh sessions, Remote-SSH editors, Jupyter, Citrix</small></div></div>
-      <div class="cat"><span class="d" style="background:#c9a227"></span><div><b>Mail / chat</b><small>Mail, Outlook, Slack, Teams, Zoom, WeChat</small></div></div>
-      <div class="cat"><span class="d" style="background:#3b82c4"></span><div><b>Browsing</b><small>any other web page</small></div></div>
-      <div class="cat"><span class="d" style="background:#d6457a"></span><div><b>Social / video</b><small>YouTube, X, Reddit, Instagram, Bilibili, Douyin…</small></div></div>
+      <div class="cat"><span class="d" style="background:#7c5cff"></span><div><b>Vibe coding</b><small data-i18n="c.code">Claude Code, Codex, Cursor, VS Code, GitHub</small></div></div>
+      <div class="cat"><span class="d" style="background:#2fa36b"></span><div><b>Paper + AI writing</b><small data-i18n="c.write">Overleaf, Google Docs, Word, ChatGPT/Claude chat</small></div></div>
+      <div class="cat"><span class="d" style="background:#a0703a"></span><div><b>Paper reading</b><small data-i18n="c.read">ScienceDirect, Nature, eLife, Journal of Vision, arXiv, PubMed, Paperpile, Zotero</small></div></div>
+      <div class="cat"><span class="d" style="background:#b4559b"></span><div><b>Data analysis</b><small data-i18n="c.data">MATLAB, RStudio, JASP, SPSS, Prism, Fiji, local Streamlit apps</small></div></div>
+      <div class="cat"><span class="d" style="background:#0e9f9a"></span><div><b>Figures / drawing</b><small data-i18n="c.fig">Affinity, Illustrator, Inkscape, Figma, BioRender</small></div></div>
+      <div class="cat"><span class="d" style="background:#e07b39"></span><div><b>Server / HPC</b><small data-i18n="c.server">ssh and mosh sessions, Remote-SSH editors, Jupyter, Citrix</small></div></div>
+      <div class="cat"><span class="d" style="background:#c9a227"></span><div><b>Mail / chat</b><small data-i18n="c.mail">Mail, Outlook, Slack, Teams, Zoom, WeChat</small></div></div>
+      <div class="cat"><span class="d" style="background:#3b82c4"></span><div><b>Browsing</b><small data-i18n="c.browse">any other web page</small></div></div>
+      <div class="cat"><span class="d" style="background:#d6457a"></span><div><b>Social / video</b><small data-i18n="c.social">YouTube, X, Reddit, Instagram, Bilibili, Douyin…</small></div></div>
     </div>
   </section>
 
   <section id="privacy">
-    <h2>Private by design</h2>
-    <p class="sub">SciTime has no server, no account and no network code. Your activity is a SQLite
+    <h2 data-i18n="privacy.h2">Private by design</h2>
+    <p class="sub" data-i18n="privacy.sub">SciTime has no server, no account and no network code. Your activity is a SQLite
       file on your Mac.</p>
     <div class="grid">
-      <div class="card"><div class="ic">🔒</div><h3>Stays on your Mac</h3>
-        <p>Stored in <code>~/Library/Application Support/scitime</code>, readable only by your user.</p></div>
-      <div class="card"><div class="ic">🚫</div><h3>No screenshots, no keylogging</h3>
-        <p>Only the name of the app in front, the active tab's address and the terminal job.</p></div>
-      <div class="card"><div class="ic">💤</div><h3>Idle time ignored</h3>
-        <p>Five minutes without keyboard or mouse and the clock stops.</p></div>
+      <div class="card"><div class="ic">🔒</div><h3 data-i18n="p.mac.h">Stays on your Mac</h3>
+        <p data-i18n="p.mac.p">Stored in <code>~/Library/Application Support/scitime</code>, readable only by your user.</p></div>
+      <div class="card"><div class="ic">🚫</div><h3 data-i18n="p.noshot.h">No screenshots, no keylogging</h3>
+        <p data-i18n="p.noshot.p">Only the name of the app in front, the active tab's address and the terminal job.</p></div>
+      <div class="card"><div class="ic">💤</div><h3 data-i18n="p.idle.h">Idle time ignored</h3>
+        <p data-i18n="p.idle.p">Five minutes without keyboard or mouse and the clock stops.</p></div>
     </div>
   </section>
 
   <section id="install">
-    <h2>Install in a minute</h2>
-    <p class="sub">Needs macOS and <a href="https://docs.astral.sh/uv/">uv</a>.</p>
+    <h2 data-i18n="install.h2">Install in a minute</h2>
+    <p class="sub" data-i18n="install.sub">Needs macOS and <a href="https://docs.astral.sh/uv/">uv</a>.</p>
     <div class="steps">
-      <pre><span class="c"># get it</span>
+      <pre><span class="c" data-i18n="i.get"># get it</span>
 git clone https://github.com/yongninglei/scitime
 cd scitime
 uv sync
 
-<span class="c"># see a dashboard with made-up data</span>
+<span class="c" data-i18n="i.demo"># see a dashboard with made-up data</span>
 uv run scitime demo</pre>
-      <pre><span class="c"># your own rules, then run at login</span>
+      <pre><span class="c" data-i18n="i.login"># your own rules, then run at login</span>
 uv run scitime init
 uv run scitime install-agent
 
-<span class="c"># any time</span>
+<span class="c" data-i18n="i.any"># any time</span>
 uv run scitime report
 uv run scitime dashboard</pre>
     </div>
   </section>
 
   <section class="donate" id="donate" hidden>
-    <h2>Support SciTime</h2>
-    <p class="sub">SciTime is free. If it helps your research, a coffee keeps it going.</p>
-    <a class="btn" id="bmc" href="#">☕ Buy me a coffee</a>
+    <h2 data-i18n="donate.h2">Support SciTime</h2>
+    <p class="sub" data-i18n="donate.sub">SciTime is free. If it helps your research, a coffee keeps it going.</p>
+    <a class="btn" id="bmc" href="#" data-i18n="donate.btn">☕ Buy me a coffee</a>
   </section>
 
-  <footer>
+  <footer data-i18n="footer">
     SciTime is MIT-licensed, by <a href="https://github.com/yongninglei">Yongning Lei</a>.
     Inspired by <a href="https://github.com/Planshit/Tai">Tai</a> for Windows.
   </footer>
 </div>
 <script>
+// Chinese text for every element with data-i18n; English is what the HTML holds.
+const ZH = {
+  "nav.features": "功能", "nav.categories": "类别", "nav.privacy": "隐私", "nav.install": "安装", "nav.donate": "☕ 赞助",
+  "hero.badge": "🔬 免费 · 开源 · macOS",
+  "hero.h1": "你的<span>科研时间</span><br>都去哪儿了？",
+  "hero.lead": "SciTime 是一个科研活动监测工具。它在后台把你的屏幕时间分成用 AI 写代码、写论文、读文献、分析数据、画图、在集群上跑任务 —— 以及中间刷网页的时间。",
+  "hero.start": "开始使用", "hero.demo": "打开在线演示 ↗",
+  "features.h2": "为科研人员而做",
+  "features.sub": "一般的屏幕时间软件只告诉你「Chrome：6 小时」。SciTime 告诉你其中多少是 Overleaf、PubMed、你自己的 Streamlit 应用，又有多少是 YouTube。",
+  "f.tools.h": "认识科研工具",
+  "f.tools.p": "Overleaf、Zotero、MATLAB、RStudio、Jupyter、Fiji、FSLeyes、BioRender、Affinity —— 还有 AI 助手，并区分是在写代码还是写论文。",
+  "f.term.h": "看得懂终端",
+  "f.term.p": "<code>ssh</code> 会话算作集群时间，前台标签页里运行的 <code>claude</code> 或 <code>codex</code> 算作 AI 写代码。",
+  "f.bar.h": "常驻菜单栏",
+  "f.bar.p": "一眼看到今天的总时间。点开查看每个类别、最常用的网站，以及目标完成得怎么样。",
+  "f.goals.h": "目标和上限",
+  "f.goals.p": "「至少写 4 小时」「最多浏览 1.5 小时」。超过上限会弹出通知，每晚还有一封日报邮件。",
+  "f.phone.h": "iPhone 也能算",
+  "f.phone.p": "可选的快捷指令自动化，把手机时间加到同一天里 —— 不用装 app，也不需要开发者账号。",
+  "f.rules.h": "你自己的规则",
+  "f.rules.p": "在 <code>sites.yaml</code> 里把网站列到类别下面，或者让 AI 帮你设置。改完之后，过去的日子也会重新归类。",
+  "cats.h2": "开箱即用的类别",
+  "cats.sub": "可以改名、改颜色，或者在 <code>sites.yaml</code> 和 <code>rules.toml</code> 里加你自己的。",
+  "c.code": "Claude Code、Codex、Cursor、VS Code、GitHub",
+  "c.write": "Overleaf、Google 文档、Word、ChatGPT/Claude 聊天",
+  "c.read": "ScienceDirect、Nature、eLife、Journal of Vision、arXiv、PubMed、Paperpile、Zotero",
+  "c.data": "MATLAB、RStudio、JASP、SPSS、Prism、Fiji、本地 Streamlit 应用",
+  "c.fig": "Affinity、Illustrator、Inkscape、Figma、BioRender",
+  "c.server": "ssh 和 mosh 会话、Remote-SSH 编辑器、Jupyter、Citrix",
+  "c.mail": "邮件、Outlook、Slack、Teams、Zoom、微信",
+  "c.browse": "其他所有网页",
+  "c.social": "YouTube、X、Reddit、Instagram、哔哩哔哩、抖音……",
+  "privacy.h2": "从设计上保护隐私",
+  "privacy.sub": "SciTime 没有服务器、没有账号，也没有联网代码。你的活动记录只是 Mac 上的一个 SQLite 文件。",
+  "p.mac.h": "只留在你的 Mac 上",
+  "p.mac.p": "保存在 <code>~/Library/Application Support/scitime</code>，只有你的用户能读。",
+  "p.noshot.h": "不截屏，不记录按键",
+  "p.noshot.p": "只记录前台 app 的名字、当前标签页的网址和终端里的任务。",
+  "p.idle.h": "离开时不计时",
+  "p.idle.p": "五分钟没有键盘和鼠标操作，计时就会停止。",
+  "install.h2": "一分钟装好",
+  "install.sub": "需要 macOS 和 <a href=\"https://docs.astral.sh/uv/\">uv</a>。中文说明见 <a href=\"https://github.com/yongninglei/scitime/blob/main/README.zh-CN.md\">README.zh-CN</a>。",
+  "i.get": "# 下载", "i.demo": "# 用虚构数据看看仪表盘",
+  "i.login": "# 生成你的规则，然后设为开机启动", "i.any": "# 随时查看",
+  "donate.h2": "支持 SciTime",
+  "donate.sub": "SciTime 是免费的。如果它对你的研究有帮助，请我喝杯咖啡就能让它继续下去。",
+  "donate.btn": "☕ 请我喝咖啡",
+  "footer": "SciTime 以 MIT 协议开源，作者 <a href=\"https://github.com/yongninglei\">Yongning Lei</a>。灵感来自 Windows 上的 <a href=\"https://github.com/Planshit/Tai\">Tai</a>。",
+};
+const EN = {};
+document.querySelectorAll("[data-i18n]").forEach(el => { EN[el.dataset.i18n] = el.innerHTML; });
+const META = { en: [document.title, "en"], zh: ["SciTime — 科研活动监测（macOS）", "zh-CN"] };
+
+function setLang(lang, save) {
+  const dict = lang === "zh" ? ZH : EN;
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    const html = dict[el.dataset.i18n];
+    if (html !== undefined) el.innerHTML = html;
+  });
+  document.title = META[lang][0];
+  document.documentElement.lang = META[lang][1];
+  document.querySelectorAll(".lang button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.lang === lang)));
+  if (save) { try { localStorage.setItem("scitime-lang", lang); } catch (e) {} }
+}
+
+document.querySelectorAll(".lang button").forEach(b => b.addEventListener("click", () => setLang(b.dataset.lang, true)));
+{
+  let lang = new URLSearchParams(location.search).get("lang");
+  if (lang !== "zh" && lang !== "en") {
+    try { lang = localStorage.getItem("scitime-lang"); } catch (e) { lang = null; }
+  }
+  if (lang !== "zh" && lang !== "en") lang = (navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en";
+  if (lang === "zh") setLang("zh", false);
+}
+
 // Set this to your Buy Me a Coffee username to show the donate section.
 const BUYMEACOFFEE = "tlei";
 if (BUYMEACOFFEE) {

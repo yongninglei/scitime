@@ -139,7 +139,7 @@ def run() -> None:
 
             out = store.DATA_DIR / "dashboard.html"
             con = store.connect()
-            dashboard.write(con, rules.load(), dt.date.today(), 14, out)
+            dashboard.write(con, rules.load(), dt.date.today(), dashboard.HISTORY_DAYS, out)
             con.close()
             subprocess.run(["open", str(out)], check=False)
 

@@ -9,7 +9,7 @@ media. It is a productivity tool for macOS, inspired by [Tai](https://github.com
 
 Every few seconds it records which app, browser tab and terminal job is in front, and
 sorts the time into categories. Today's total sits in the menu bar; a dashboard shows
-the day by category, hour and the last two weeks.
+the day by category and hour, and lets you go back to any of the last 30 days to review it.
 
 <p align="center">
   <img src="docs/img/menubar.png" width="460" alt="SciTime in the macOS menu bar: today's total, time per category with top sites, and goal checks">
@@ -46,7 +46,7 @@ uv run scitime now          # what it sees right now — check permissions with 
 uv run scitime run          # track in the foreground (Ctrl-C to stop)
 uv run scitime report       # today, per category, with top sites/hosts
 uv run scitime report --days 7
-uv run scitime dashboard    # HTML dashboard, opens in the browser
+uv run scitime dashboard    # HTML dashboard, opens in the browser; go back through the last 30 days
 uv run scitime bar          # today's time in the menu bar; click for categories + goals
 uv run scitime install-agent  # start at login and keep running in the background
 uv run scitime status

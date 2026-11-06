@@ -157,3 +157,17 @@ def test_add_category_and_rule():
         rules.add_category_text(t, "grant_writing")
     with pytest.raises(ValueError):
         rules.add_rule_text(t, "grant_writing", {"app": "("})
+
+
+def test_dashboard_has_every_day(tmp_path):
+    from scitime import dashboard, demo
+
+    con = store.connect(tmp_path / "demo.db")
+    end = dt.date(2026, 11, 2)
+    demo.fill(con, end, days=5)
+    dashboard.write(con, CFG, end, 5, tmp_path / "d.html")
+    html = (tmp_path / "d.html").read_text()
+    assert html.count('<div class="day"') == 5          # one view per day, oldest first
+    assert html.count('<div class="day" hidden') == 4   # only the latest is shown without JS
+    assert 'class="col sel" data-day="2026-11-02"' in html
+    assert html.count('class="chart-legend"') == 6      # under each hourly chart + the daily chart

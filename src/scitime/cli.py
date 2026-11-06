@@ -140,7 +140,7 @@ def report_cmd(
 @app.command()
 def dashboard(
     day: str = typer.Option("today", "--day"),
-    days: int = typer.Option(14, "--days", help="Days in the history chart"),
+    days: int = typer.Option(30, "--days", help="Days you can go back to (and in the history chart)"),
     out: Path = typer.Option(store.DATA_DIR / "dashboard.html", "--out"),
     open_: bool = typer.Option(True, "--open/--no-open"),
 ) -> None:

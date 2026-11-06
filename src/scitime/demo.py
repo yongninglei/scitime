@@ -62,7 +62,7 @@ def write(out: Path, db: Path, today: dt.date | None = None) -> Path:
     cfg.phone_dir = ""
     con = store.connect(db)
     fill(con, today)
-    dashboard.write(con, cfg, today, 14, out)
+    dashboard.write(con, cfg, today, 14, out)  # fill() makes 14 days
     con.close()
     return out
 

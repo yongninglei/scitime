@@ -76,7 +76,7 @@ class Tracker:
         from . import dashboard
 
         out = Path(self.cfg.phone_dir).expanduser() / "scitime.html"
-        dashboard.write(self.con, self.cfg, dt.date.fromtimestamp(now), 14, out)
+        dashboard.write(self.con, self.cfg, dt.date.fromtimestamp(now), dashboard.HISTORY_DAYS, out)
 
     def run(self) -> None:
         while True:
